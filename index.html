@@ -91,117 +91,37 @@
       color: white;
       transform: translateY(-2px);
     }
-    .helper-text {
-      background: var(--accent-light);
-      color: var(--accent);
-      border-radius: 0.75rem;
-      padding: 0.75rem 1rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-    .folders-grid {
-      display: flex;
-      flex-direction: column;
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
-    .category-folder {
+    .card {
       background: var(--card-bg);
       border-radius: 1.25rem;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .folder-toggle {
-      width: 100%;
-      border: none;
-      background: transparent;
-      padding: 1.25rem 1.5rem;
+      padding: 1.25rem;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      color: #0f172a;
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-    .folder-meta {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-       flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .folder-indicator {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 999px;
-      border: 2px solid var(--accent);
-      display: grid;
-      place-items: center;
-      color: var(--accent);
-      font-size: 1.2rem;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-    .category-folder.open .folder-indicator {
-      background: var(--accent);
-      color: white;
-    }
-    .topics {
-      display: none;
-      padding: 1.25rem 1.25rem 1.5rem;
-      background: linear-gradient(120deg, #eef2ff, #fdf2f8);
-    }
-    .category-folder.open .topics {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .topic-card {
-      background: var(--card-bg);
-      border-radius: 1rem;
-      padding: 0.5rem 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      border: 1px solid #e5e7eb;
-    }
-    .topic-toggle {
-      border: none;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      cursor: pointer;
-      padding: 0.5rem;
-      gap: 1rem;
-    }
-    .topic-heading {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.3rem;
-      text-align: left;
-    }
-    .topic-heading h3 {
-      margin: 0;
-      font-size: 1.2rem;
-      color: #0f172a;
-    }
-    .topic-indicator {
-      font-size: 1.6rem;
-      color: var(--accent);
-    }
-    .topic-content {
-      display: none;
       flex-direction: column;
       gap: 0.75rem;
-      padding: 0 0.5rem 0.75rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
     }
-    .topic-card.open .topic-content {
-      display: flex;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.75rem;
+      border-radius: 999px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #0f172a;
     }
     .summary {
       color: var(--muted);
@@ -222,13 +142,30 @@
       background: #fef3c7;
       color: #c2410c;
     }
-    .topic-content ul {
+    .card button {
+      border: none;
+      background: none;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+      align-self: flex-start;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s ease;
+    }
+    .card button:hover {
+      background: var(--accent-light);
+    }
+    ul {
       list-style: none;
       padding: 0;
       margin: 0;
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 0.9rem;
+    }
+    .card.expanded ul {
+      display: flex;
     }
     li {
       background: #f8fafc;
@@ -268,18 +205,8 @@
       .controls {
         padding: 1rem;
       }
-      .folder-toggle {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-      .folder-meta {
-        justify-content: space-between;
-        width: 100%;
-      }
-      .topic-toggle {
-        flex-direction: column;
-        align-items: flex-start;
+      .card {
+        padding: 1rem;
       }
     }
   </style>
@@ -288,7 +215,7 @@
   <header>
     <h1>Hong Kong Study Compass</h1>
     <p>
-      Explore key debate topics across education, technology, environment, lifestyle, culture, careers, ethics, leisure, and global issues. Use the search bar or category chips, expand each folder, and remember every point with built-in bilingual cues.
+      Explore key debate topics across education, technology, environment, lifestyle, culture, careers, ethics, leisure, and global issues. Use the search bar or category chips, expand each card, and remember every point with built-in bilingual cues.
     </p>
   </header>
 
@@ -310,1175 +237,664 @@
       </div>
     </section>
 
-    <section class="folders-grid">
-      <p class="helper-text">Tip: Click a category folder, then open each topic folder to reveal bilingual talking points.</p>
-
+    <section class="cards-grid" id="cards">
       <!-- Education & Learning -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Education & Learning</span>
-          <span class="folder-meta">
-            <span class="folder-count">7 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Online Learning vs Face-to-Face Classes</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Compare flexibility and interaction to decide the best mix.</p>
-              <div class="memory-tags"><span>Flex ≠ Feedback</span><span>Hybrid Power</span></div>
-              <ul>
-                <li><span class="en">Online learning lets students study anytime, replay lessons, and save commuting hours in dense cities.</span><span class="zh">網上學習讓學生隨時學習、重播課堂，並在密集城市中節省通勤時間。</span></li>
-                <li><span class="en">It supports self-paced revision for tutorial-heavy schedules.</span><span class="zh">它支援依照自己步伐複習，配合補習與繁忙課外活動。</span></li>
-                <li><span class="en">Face-to-face lessons build stronger rapport, immediate feedback, and shared discipline.</span><span class="zh">面授課堂培養更強的師生關係、即時回饋與共同自律。</span></li>
-                <li><span class="en">Best mix: use online tools for revision but rely on classroom energy for teamwork.</span><span class="zh">最佳做法是以網課輔助溫習，同時依靠課室互動推動合作。</span></li>
-                <li><span class="en">Online platforms widen elective choices beyond what a campus timetable can host.</span><span class="zh">線上平台提供校園課表未能容納的更多選修選擇。</span></li>
-                <li><span class="en">Hands-on labs, arts rehearsals, and demos still need in-person equipment and safety guidance.</span><span class="zh">實驗課、藝術排練與示範仍需要面授設備與安全指導。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Online Learning vs Face-to-Face Classes</h3>
+        <p class="summary">Compare flexibility and interaction to decide the best mix.</p>
+        <div class="memory-tags"><span>Flex ≠ Feedback</span><span>Hybrid Power</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Online learning lets students study anytime, replay lessons, and save commuting hours in dense cities.</span><span class="zh">網上學習讓學生隨時學習、重播課堂，並在密集城市中節省通勤時間。</span></li>
+          <li><span class="en">It supports self-paced revision for tutorial-heavy schedules.</span><span class="zh">它支援依照自己步伐複習，配合補習與繁忙課外活動。</span></li>
+          <li><span class="en">Face-to-face lessons build stronger rapport, immediate feedback, and shared discipline.</span><span class="zh">面授課堂培養更強的師生關係、即時回饋與共同自律。</span></li>
+          <li><span class="en">Best mix: use online tools for revision but rely on classroom energy for teamwork.</span><span class="zh">最佳做法是以網課輔助溫習，同時依靠課室互動推動合作。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Should Students Use AI for Schoolwork?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Harness AI responsibly for brainstorming without losing originality.</p>
-              <div class="memory-tags"><span>AI = Assistant</span><span>Cite & Create</span></div>
-              <ul>
-                <li><span class="en">AI like ChatGPT quickly explains tough ideas and suggests structures without writing the whole assignment.</span><span class="zh">ChatGPT 等 AI 可迅速解釋難題並建議結構，而不會代寫整份作業。</span></li>
-                <li><span class="en">Using AI as a brainstorming buddy makes learning more efficient.</span><span class="zh">把 AI 當作腦力激盪夥伴能提升學習效率。</span></li>
-                <li><span class="en">Over-reliance risks weaker critical thinking and original expression.</span><span class="zh">過度依賴會削弱批判思考與原創表達。</span></li>
-                <li><span class="en">Schools should allow limited use with citation rules and clear personal input.</span><span class="zh">學校應允許有限度使用，要求標註來源並提供個人見解。</span></li>
-                <li><span class="en">Digital citizenship lessons should cover how to cite prompts, verify answers, and log personal contributions.</span><span class="zh">數碼公民課應教授如何標註提示來源、核實答案並記錄個人貢獻。</span></li>
-                <li><span class="en">Teachers need ongoing training to design assessments that reward process, oral defence, and creative output.</span><span class="zh">教師需要持續培訓，以設計重視過程、口頭答辯與創意成果的評核。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Should Students Use AI for Schoolwork?</h3>
+        <p class="summary">Harness AI responsibly for brainstorming without losing originality.</p>
+        <div class="memory-tags"><span>AI = Assistant</span><span>Cite & Create</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">AI like ChatGPT quickly explains tough ideas and suggests structures without writing the whole assignment.</span><span class="zh">ChatGPT 等 AI 可迅速解釋難題並建議結構，而不會代寫整份作業。</span></li>
+          <li><span class="en">Using AI as a brainstorming buddy makes learning more efficient.</span><span class="zh">把 AI 當作腦力激盪夥伴能提升學習效率。</span></li>
+          <li><span class="en">Over-reliance risks weaker critical thinking and original expression.</span><span class="zh">過度依賴會削弱批判思考與原創表達。</span></li>
+          <li><span class="en">Schools should allow limited use with citation rules and clear personal input.</span><span class="zh">學校應允許有限度使用，要求標註來源並提供個人見解。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Is Homework Still Valuable?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Balance reinforcement benefits with student wellbeing.</p>
-              <div class="memory-tags"><span>Practice Makes Ready</span><span>Less but Better</span></div>
-              <ul>
-                <li><span class="en">Homework reinforces class learning and builds independent discipline.</span><span class="zh">功課能鞏固課堂內容並培養自律。</span></li>
-                <li><span class="en">Regular maths drills boost DSE problem-solving speed.</span><span class="zh">定期數學練習有助提升 DSE 解題速度。</span></li>
-                <li><span class="en">Excessive homework in Hong Kong triggers stress, fatigue, and lost rest time.</span><span class="zh">香港過量功課造成壓力、疲倦與休息時間流失。</span></li>
-                <li><span class="en">Reduce quantity and focus on meaningful, project-based tasks instead of abolishing homework.</span><span class="zh">與其取消，不如減量並改為有意義的專題任務。</span></li>
-                <li><span class="en">Flipped classrooms use short pre-lesson tasks so class time targets coaching and discussion.</span><span class="zh">翻轉課堂透過課前短任務，讓課堂時間集中於指導與討論。</span></li>
-                <li><span class="en">Clear feedback rubrics ensure students know how each assignment links to upcoming exams.</span><span class="zh">清晰的回饋量表讓學生明白每份功課如何對應未來考試。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Is Homework Still Valuable?</h3>
+        <p class="summary">Balance reinforcement benefits with student wellbeing.</p>
+        <div class="memory-tags"><span>Practice Makes Ready</span><span>Less but Better</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Homework reinforces class learning and builds independent discipline.</span><span class="zh">功課能鞏固課堂內容並培養自律。</span></li>
+          <li><span class="en">Regular maths drills boost DSE problem-solving speed.</span><span class="zh">定期數學練習有助提升 DSE 解題速度。</span></li>
+          <li><span class="en">Excessive homework in Hong Kong triggers stress, fatigue, and lost rest time.</span><span class="zh">香港過量功課造成壓力、疲倦與休息時間流失。</span></li>
+          <li><span class="en">Reduce quantity and focus on meaningful, project-based tasks instead of abolishing homework.</span><span class="zh">與其取消，不如減量並改為有意義的專題任務。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Extracurriculars vs Academic Results</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Blend grades and growth to stand out.</p>
-              <div class="memory-tags"><span>Grades + Grit</span><span>Whole Person</span></div>
-              <ul>
-                <li><span class="en">Clubs and teams build leadership, teamwork, and confidence beyond textbooks.</span><span class="zh">學會及隊際活動培養課本以外的領導、合作與自信。</span></li>
-                <li><span class="en">High DSE scores still gatekeep university and career opportunities.</span><span class="zh">高 DSE 分數仍是大學與事業的門檻。</span></li>
-                <li><span class="en">Outstanding extracurriculars help applicants stand out.</span><span class="zh">出眾課外成就可令申請者更突出。</span></li>
-                <li><span class="en">Balanced focus lets students discover passions while maintaining academic strength.</span><span class="zh">兼顧兩者讓學生在保持學術實力時探索熱情。</span></li>
-                <li><span class="en">Scholarship panels often reward leadership stories drawn from sustained extracurricular service.</span><span class="zh">獎學金評審往往重視長期課外服務中展現的領導故事。</span></li>
-                <li><span class="en">Time-blocking planners help students allocate hours for both practice sessions and revision.</span><span class="zh">時間分塊規劃可協助學生同時安排練習及溫習時段。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Extracurriculars vs Academic Results</h3>
+        <p class="summary">Blend grades and growth to stand out.</p>
+        <div class="memory-tags"><span>Grades + Grit</span><span>Whole Person</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Clubs and teams build leadership, teamwork, and confidence beyond textbooks.</span><span class="zh">學會及隊際活動培養課本以外的領導、合作與自信。</span></li>
+          <li><span class="en">High DSE scores still gatekeep university and career opportunities.</span><span class="zh">高 DSE 分數仍是大學與事業的門檻。</span></li>
+          <li><span class="en">Outstanding extracurriculars help applicants stand out.</span><span class="zh">出眾課外成就可令申請者更突出。</span></li>
+          <li><span class="en">Balanced focus lets students discover passions while maintaining academic strength.</span><span class="zh">兼顧兩者讓學生在保持學術實力時探索熱情。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Reducing Study Pressure</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Design school systems that protect mental health.</p>
-              <div class="memory-tags"><span>Less Test, More Rest</span><span>Support Net</span></div>
-              <ul>
-                <li><span class="en">Trim homework loads and replace frequent tests with projects.</span><span class="zh">削減功課量並以專題取代頻密測驗。</span></li>
-                <li><span class="en">Offer mindfulness sessions and counselling to manage exam anxiety.</span><span class="zh">提供靜觀課與輔導以舒緩考試焦慮。</span></li>
-                <li><span class="en">Shift parental and societal focus from grades to growth and mental health.</span><span class="zh">引導家長與社會把重點從分數轉向成長與心理健康。</span></li>
-                <li><span class="en">Encourage exercise, hobbies, and government-funded counsellors for accessible support.</span><span class="zh">鼓勵運動與興趣活動，並透過政府資助輔導員提供支援。</span></li>
-                <li><span class="en">Provide teacher training on spotting burnout signals and adjusting workload proactively.</span><span class="zh">為教師提供培訓以辨識倦怠徵兆並主動調整工作量。</span></li>
-                <li><span class="en">Review ranking-heavy policies so schools feel freer to pilot flexible pacing.</span><span class="zh">檢視過度依賴排名的升學政策，使學校更敢於試行彈性進度。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Reducing Study Pressure</h3>
+        <p class="summary">Design school systems that protect mental health.</p>
+        <div class="memory-tags"><span>Less Test, More Rest</span><span>Support Net</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Trim homework loads and replace frequent tests with projects.</span><span class="zh">削減功課量並以專題取代頻密測驗。</span></li>
+          <li><span class="en">Offer mindfulness sessions and counselling to manage exam anxiety.</span><span class="zh">提供靜觀課與輔導以舒緩考試焦慮。</span></li>
+          <li><span class="en">Shift parental and societal focus from grades to growth and mental health.</span><span class="zh">引導家長與社會把重點從分數轉向成長與心理健康。</span></li>
+          <li><span class="en">Encourage exercise, hobbies, and government-funded counsellors for accessible support.</span><span class="zh">鼓勵運動與興趣活動，並透過政府資助輔導員提供支援。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Community Service as a Requirement?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Service learning can shape civic-minded graduates.</p>
-              <div class="memory-tags"><span>Serve to Learn</span><span>Flex Options</span></div>
-              <ul>
-                <li><span class="en">Mandatory service builds empathy, responsibility, and real-world perspective.</span><span class="zh">必修服務學習能培養同理心、責任感與實際視野。</span></li>
-                <li><span class="en">Volunteering at elderly homes teaches patience across generations.</span><span class="zh">在安老院義工服務能學會跨世代耐心。</span></li>
-                <li><span class="en">It benefits society and strengthens student portfolios.</span><span class="zh">此舉造福社會並強化學生履歷。</span></li>
-                <li><span class="en">Flexible, meaningful options prevent it from feeling like a burden.</span><span class="zh">提供彈性且有意義的選項可避免變成負擔。</span></li>
-                <li><span class="en">Partnering with vetted NGOs ensures safety briefings, insurance, and measurable impact.</span><span class="zh">與具信譽的非政府組織合作，可確保安全簡報、保險與可衡量的成效。</span></li>
-                <li><span class="en">Reflection journals or showcases help students connect service insights with classroom theories.</span><span class="zh">反思日誌或成果展示可讓學生把服務體會連結課堂理論。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Community Service as a Requirement?</h3>
+        <p class="summary">Service learning can shape civic-minded graduates.</p>
+        <div class="memory-tags"><span>Serve to Learn</span><span>Flex Options</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Mandatory service builds empathy, responsibility, and real-world perspective.</span><span class="zh">必修服務學習能培養同理心、責任感與實際視野。</span></li>
+          <li><span class="en">Volunteering at elderly homes teaches patience across generations.</span><span class="zh">在安老院義工服務能學會跨世代耐心。</span></li>
+          <li><span class="en">It benefits society and strengthens student portfolios.</span><span class="zh">此舉造福社會並強化學生履歷。</span></li>
+          <li><span class="en">Flexible, meaningful options prevent it from feeling like a burden.</span><span class="zh">提供彈性且有意義的選項可避免變成負擔。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Education & Learning">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Education & Learning</span>
-                <h3>Is Memorization Still Needed?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Combine memory with modern thinking skills.</p>
-              <div class="memory-tags"><span>Mem + Mind</span><span>Recall & Apply</span></div>
-              <ul>
-                <li><span class="en">Memorizing vocabulary and formulas forms a base for deeper understanding.</span><span class="zh">記熟詞彙與公式是深度理解的基礎。</span></li>
-                <li><span class="en">Quick recall remains vital for exams like Chinese and science.</span><span class="zh">快速提取資訊對中文與科學考試仍關鍵。</span></li>
-                <li><span class="en">Digital tools make rote learning less central than critical application.</span><span class="zh">數碼工具令死記硬背的重要性下降，批判應用更受重視。</span></li>
-                <li><span class="en">A balanced approach mixes essential memorization with creative thinking.</span><span class="zh">平衡策略結合必要記憶與創意思維。</span></li>
-                <li><span class="en">Spaced-repetition flashcards mix retrieval practice with healthy intervals.</span><span class="zh">間隔重複的抽認卡把提取練習與健康的學習節奏結合。</span></li>
-                <li><span class="en">Oral quizzing and peer teaching turn memorised facts into confident explanations.</span><span class="zh">口頭問答與同儕教學能把背誦內容轉化為自信的表達。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Is Memorization Still Needed?</h3>
+        <p class="summary">Combine memory with modern thinking skills.</p>
+        <div class="memory-tags"><span>Mem + Mind</span><span>Recall & Apply</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Memorizing vocabulary and formulas forms a base for deeper understanding.</span><span class="zh">記熟詞彙與公式是深度理解的基礎。</span></li>
+          <li><span class="en">Quick recall remains vital for exams like Chinese and science.</span><span class="zh">快速提取資訊對中文與科學考試仍關鍵。</span></li>
+          <li><span class="en">Digital tools make rote learning less central than critical application.</span><span class="zh">數碼工具令死記硬背的重要性下降，批判應用更受重視。</span></li>
+          <li><span class="en">A balanced approach mixes essential memorization with creative thinking.</span><span class="zh">平衡策略結合必要記憶與創意思維。</span></li>
+        </ul>
       </article>
 
       <!-- Technology & Social Media -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Technology & Social Media</span>
-          <span class="folder-meta">
-            <span class="folder-count">6 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Technology & Social Media">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Technology & Social Media</span>
-                <h3>Social Media & Teen Mental Health</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Leverage support while guarding against comparison.</p>
-              <div class="memory-tags"><span>Connect Carefully</span></div>
-              <ul>
-                <li><span class="en">Social media connects teens with friends and supportive communities.</span><span class="zh">社交媒體把青少年與朋友及支援社群連結起來。</span></li>
-                <li><span class="en">Constant comparison to filtered lives can erode self-esteem.</span><span class="zh">不斷與濾鏡生活比較會削弱自尊。</span></li>
-                <li><span class="en">Cyberbullying and anonymous comments damage mental health.</span><span class="zh">網絡霸凌與匿名評語會傷害心理健康。</span></li>
-                <li><span class="en">Digital literacy education and screen-time limits balance benefits and risks.</span><span class="zh">數碼素養教育與螢幕時間限制能平衡利弊。</span></li>
-                <li><span class="en">Algorithms can be tuned by using “not interested” tools and curating feeds deliberately.</span><span class="zh">透過使用「不感興趣」等工具刻意整理動態，可調整演算法。</span></li>
-                <li><span class="en">Offline digital detox days give minds a reset and reinforce real-world friendships.</span><span class="zh">離線的數位排毒日有助重整心情並鞏固現實中的友誼。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Social Media & Teen Mental Health</h3>
+        <p class="summary">Leverage support while guarding against comparison.</p>
+        <div class="memory-tags"><span>Connect Carefully</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Social media connects teens with friends and supportive communities.</span><span class="zh">社交媒體把青少年與朋友及支援社群連結起來。</span></li>
+          <li><span class="en">Constant comparison to filtered lives can erode self-esteem.</span><span class="zh">不斷與濾鏡生活比較會削弱自尊。</span></li>
+          <li><span class="en">Cyberbullying and anonymous comments damage mental health.</span><span class="zh">網絡霸凌與匿名評語會傷害心理健康。</span></li>
+          <li><span class="en">Digital literacy education and screen-time limits balance benefits and risks.</span><span class="zh">數碼素養教育與螢幕時間限制能平衡利弊。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Technology & Social Media">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Technology & Social Media</span>
-                <h3>Smartphones: Connected or Isolated?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Keep instant contact without losing present moments.</p>
-              <div class="memory-tags"><span>Message Mindfully</span></div>
-              <ul>
-                <li><span class="en">Messaging and video calls keep families close despite distance.</span><span class="zh">訊息與視訊通話讓遠距家庭仍可緊密聯繫。</span></li>
-                <li><span class="en">Busy Hongkongers rely on group chats to coordinate daily life.</span><span class="zh">忙碌港人常靠群組聊天協調日常。</span></li>
-                <li><span class="en">Phubbing during gatherings makes nearby people feel ignored.</span><span class="zh">聚餐時低頭滑手機會令身邊人感到被忽視。</span></li>
-                <li><span class="en">Mindful use preserves in-person warmth while keeping global ties.</span><span class="zh">有意識地使用可同時保留面對面溫度與全球聯繫。</span></li>
-                <li><span class="en">Emergency alerts and transit apps boost safety during typhoons or late-night journeys.</span><span class="zh">緊急提示與交通應用在颱風或深夜行程能提升安全。</span></li>
-                <li><span class="en">Public etiquette campaigns remind users to put phones away during meals, classes, and shows.</span><span class="zh">公共禮儀宣傳提醒大家在用餐、上課與觀賞演出時收起手機。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Smartphones: Connected or Isolated?</h3>
+        <p class="summary">Keep instant contact without losing present moments.</p>
+        <div class="memory-tags"><span>Message Mindfully</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Messaging and video calls keep families close despite distance.</span><span class="zh">訊息與視訊通話讓遠距家庭仍可緊密聯繫。</span></li>
+          <li><span class="en">Busy Hongkongers rely on group chats to coordinate daily life.</span><span class="zh">忙碌港人常靠群組聊天協調日常。</span></li>
+          <li><span class="en">Phubbing during gatherings makes nearby people feel ignored.</span><span class="zh">聚餐時低頭滑手機會令身邊人感到被忽視。</span></li>
+          <li><span class="en">Mindful use preserves in-person warmth while keeping global ties.</span><span class="zh">有意識地使用可同時保留面對面溫度與全球聯繫。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Technology & Social Media">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Technology & Social Media</span>
-                <h3>AI in Daily Life</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Balance convenience with privacy and job concerns.</p>
-              <div class="memory-tags"><span>Smart & Safe</span></div>
-              <ul>
-                <li><span class="en">AI assistants simplify navigation, reminders, and personalised tips.</span><span class="zh">AI 助理簡化導航、提醒與個人化建議。</span></li>
-                <li><span class="en">Healthcare AI detects diseases earlier through accurate imaging.</span><span class="zh">醫療 AI 透過精準影像協助及早偵測疾病。</span></li>
-                <li><span class="en">Data collection raises privacy and surveillance worries.</span><span class="zh">大量資料收集引發私隱與監控疑慮。</span></li>
-                <li><span class="en">Automation may replace routine jobs, so regulation must guide fair use.</span><span class="zh">自動化或取代例行工作，需以監管確保公平。</span></li>
-                <li><span class="en">Bias hidden in training data can reproduce discrimination unless engineers audit continuously.</span><span class="zh">若不持續審視，訓練數據中的偏見會複製歧視。</span></li>
-                <li><span class="en">Reskilling programmes help workers shift into AI-supported roles instead of being displaced.</span><span class="zh">再培訓計畫可協助員工轉入 AI 支援的職務，而非被淘汰。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>AI in Daily Life</h3>
+        <p class="summary">Balance convenience with privacy and job concerns.</p>
+        <div class="memory-tags"><span>Smart & Safe</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">AI assistants simplify navigation, reminders, and personalised tips.</span><span class="zh">AI 助理簡化導航、提醒與個人化建議。</span></li>
+          <li><span class="en">Healthcare AI detects diseases earlier through accurate imaging.</span><span class="zh">醫療 AI 透過精準影像協助及早偵測疾病。</span></li>
+          <li><span class="en">Data collection raises privacy and surveillance worries.</span><span class="zh">大量資料收集引發私隱與監控疑慮。</span></li>
+          <li><span class="en">Automation may replace routine jobs, so regulation must guide fair use.</span><span class="zh">自動化或取代例行工作，需以監管確保公平。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Technology & Social Media">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Technology & Social Media</span>
-                <h3>Protecting Personal Privacy Online</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Adopt everyday habits to stay secure.</p>
-              <div class="memory-tags"><span>Lock, Limit, Look</span></div>
-              <ul>
-                <li><span class="en">Use strong unique passwords and two-factor authentication.</span><span class="zh">使用強而獨特的密碼與雙重驗證。</span></li>
-                <li><span class="en">Adjust social media settings to control who sees your information.</span><span class="zh">調整社交平台設定以控制誰能看到你的資訊。</span></li>
-                <li><span class="en">Share location or photos cautiously to avoid unwanted tracking.</span><span class="zh">謹慎分享位置與照片以免遭追蹤。</span></li>
-                <li><span class="en">Monitor data breaches and use VPNs on public Wi-Fi.</span><span class="zh">留意資料外洩並在公用 Wi-Fi 上使用 VPN。</span></li>
-                <li><span class="en">Learn to inspect URLs and hover over links to catch phishing before clicking.</span><span class="zh">學會檢查網址並在點擊前懸停以辨識釣魚連結。</span></li>
-                <li><span class="en">Use privacy laws to request companies delete stored data when you leave a service.</span><span class="zh">善用私隱法規，於停用服務時要求企業刪除所存資料。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Protecting Personal Privacy Online</h3>
+        <p class="summary">Adopt everyday habits to stay secure.</p>
+        <div class="memory-tags"><span>Lock, Limit, Look</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Use strong unique passwords and two-factor authentication.</span><span class="zh">使用強而獨特的密碼與雙重驗證。</span></li>
+          <li><span class="en">Adjust social media settings to control who sees your information.</span><span class="zh">調整社交平台設定以控制誰能看到你的資訊。</span></li>
+          <li><span class="en">Share location or photos cautiously to avoid unwanted tracking.</span><span class="zh">謹慎分享位置與照片以免遭追蹤。</span></li>
+          <li><span class="en">Monitor data breaches and use VPNs on public Wi-Fi.</span><span class="zh">留意資料外洩並在公用 Wi-Fi 上使用 VPN。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Technology & Social Media">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Technology & Social Media</span>
-                <h3>Is Technology Making Us Lazier?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Let automation unlock creativity, not complacency.</p>
-              <div class="memory-tags"><span>Convenience vs Effort</span></div>
-              <ul>
-                <li><span class="en">Automation frees time for creative learning and skill-building.</span><span class="zh">自動化釋放時間讓人投向創意學習與技能培養。</span></li>
-                <li><span class="en">Delivery apps and online shopping add convenience to hectic lives.</span><span class="zh">送餐與網購為繁忙生活帶來便利。</span></li>
-                <li><span class="en">Over-reliance can reduce physical activity and problem-solving grit.</span><span class="zh">過度依賴會降低運動量與解題毅力。</span></li>
-                <li><span class="en">Self-discipline keeps tech as a helper instead of a crutch.</span><span class="zh">自律能讓科技成為助力而非依賴。</span></li>
-                <li><span class="en">Gamified fitness trackers and step challenges nudge steady daily movement.</span><span class="zh">遊戲化的健身追蹤與步數挑戰可促進每天穩定活動。</span></li>
-                <li><span class="en">Setting personal stretch goals keeps problem-solving muscles and creativity sharp.</span><span class="zh">設定進階目標能維持解難毅力與創意。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Is Technology Making Us Lazier?</h3>
+        <p class="summary">Let automation unlock creativity, not complacency.</p>
+        <div class="memory-tags"><span>Convenience vs Effort</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Automation frees time for creative learning and skill-building.</span><span class="zh">自動化釋放時間讓人投向創意學習與技能培養。</span></li>
+          <li><span class="en">Delivery apps and online shopping add convenience to hectic lives.</span><span class="zh">送餐與網購為繁忙生活帶來便利。</span></li>
+          <li><span class="en">Over-reliance can reduce physical activity and problem-solving grit.</span><span class="zh">過度依賴會降低運動量與解題毅力。</span></li>
+          <li><span class="en">Self-discipline keeps tech as a helper instead of a crutch.</span><span class="zh">自律能讓科技成為助力而非依賴。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Technology & Social Media">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Technology & Social Media</span>
-                <h3>Technology & Environmental Conservation</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Use data and devices to protect nature.</p>
-              <div class="memory-tags"><span>Track & Restore</span></div>
-              <ul>
-                <li><span class="en">Satellites and sensors track deforestation and wildlife in real time.</span><span class="zh">衛星與感應器能即時監測濫伐與野生動物。</span></li>
-                <li><span class="en">Apps help citizens measure and cut their carbon footprints.</span><span class="zh">應用程式協助市民計算並減少碳足跡。</span></li>
-                <li><span class="en">Smart energy systems optimise building electricity use.</span><span class="zh">智慧能源系統優化建築用電。</span></li>
-                <li><span class="en">Drones plant trees and remove ocean plastic efficiently.</span><span class="zh">無人機能高效植樹與清理海洋塑膠。</span></li>
-                <li><span class="en">Open environmental datasets let researchers and students co-create fresh insights.</span><span class="zh">公開的環境數據讓研究者與學生共同產出新洞見。</span></li>
-                <li><span class="en">Green-tech careers motivate youth to join conservation with real wages.</span><span class="zh">綠色科技職涯使年輕人得以帶薪參與保育。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Technology & Environmental Conservation</h3>
+        <p class="summary">Use data and devices to protect nature.</p>
+        <div class="memory-tags"><span>Track & Restore</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Satellites and sensors track deforestation and wildlife in real time.</span><span class="zh">衛星與感應器能即時監測濫伐與野生動物。</span></li>
+          <li><span class="en">Apps help citizens measure and cut their carbon footprints.</span><span class="zh">應用程式協助市民計算並減少碳足跡。</span></li>
+          <li><span class="en">Smart energy systems optimise building electricity use.</span><span class="zh">智慧能源系統優化建築用電。</span></li>
+          <li><span class="en">Drones plant trees and remove ocean plastic efficiently.</span><span class="zh">無人機能高效植樹與清理海洋塑膠。</span></li>
+        </ul>
       </article>
 
       <!-- Environment & Sustainability -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Environment & Sustainability</span>
-          <span class="folder-meta">
-            <span class="folder-count">5 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Environment & Sustainability">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Environment & Sustainability</span>
-                <h3>Individual Actions Against Climate Change</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Small habits add up to massive impact.</p>
-              <div class="memory-tags"><span>Eat • Move • Save</span></div>
-              <ul>
-                <li><span class="en">Eat less meat and waste fewer meals to cut methane-heavy agriculture.</span><span class="zh">少吃肉與減少浪費可降低畜牧業甲烷排放。</span></li>
-                <li><span class="en">Choose public transport, cycling, or walking in dense cities.</span><span class="zh">在密集城市選擇公共交通、單車或步行。</span></li>
-                <li><span class="en">Save energy by switching off unused appliances and buying efficient models.</span><span class="zh">關掉不用的電器並選購高效產品以節能。</span></li>
-                <li><span class="en">Support sustainable brands and recycle properly to shrink landfill waste.</span><span class="zh">支持永續品牌並做好回收以減少堆填。</span></li>
-                <li><span class="en">Sharing progress with friends builds positive peer pressure for greener habits.</span><span class="zh">與朋友分享進展能營造推動綠色習慣的同儕力量。</span></li>
-                <li><span class="en">Retrofitting homes with insulation, fans, or micro solar panels cuts emissions long term.</span><span class="zh">為家居加裝隔熱、吊扇或小型太陽能板，可長期減排。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Individual Actions Against Climate Change</h3>
+        <p class="summary">Small habits add up to massive impact.</p>
+        <div class="memory-tags"><span>Eat • Move • Save</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Eat less meat and waste fewer meals to cut methane-heavy agriculture.</span><span class="zh">少吃肉與減少浪費可降低畜牧業甲烷排放。</span></li>
+          <li><span class="en">Choose public transport, cycling, or walking in dense cities.</span><span class="zh">在密集城市選擇公共交通、單車或步行。</span></li>
+          <li><span class="en">Save energy by switching off unused appliances and buying efficient models.</span><span class="zh">關掉不用的電器並選購高效產品以節能。</span></li>
+          <li><span class="en">Support sustainable brands and recycle properly to shrink landfill waste.</span><span class="zh">支持永續品牌並做好回收以減少堆填。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Environment & Sustainability">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Environment & Sustainability</span>
-                <h3>Should Hong Kong Ban Single-Use Plastics?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Consider oceans, costs, and culture shifts.</p>
-              <div class="memory-tags"><span>Ban to Reset</span></div>
-              <ul>
-                <li><span class="en">A ban would sharply reduce marine pollution and protect sea life.</span><span class="zh">禁用即棄塑膠可大幅減少海洋污染並保護海洋生物。</span></li>
-                <li><span class="en">It nudges citizens toward reusable bags, bottles, and straws.</span><span class="zh">措施可促使市民改用可重用袋、瓶、吸管。</span></li>
-                <li><span class="en">Businesses may face upfront costs and convenience may dip.</span><span class="zh">企業或需面對前期成本，便利程度也會下降。</span></li>
-                <li><span class="en">Subsidies and education can smooth the transition.</span><span class="zh">透過補貼與教育可令過渡更順暢。</span></li>
-                <li><span class="en">Biodegradable rental cup and container schemes keep takeaway culture convenient.</span><span class="zh">可生物降解的租用杯盒計畫能保持外賣文化的便利。</span></li>
-                <li><span class="en">Tax breaks or awards can celebrate early adopters that install refill stations.</span><span class="zh">對率先設置補充站的商店提供稅務優惠或獎項，以示鼓勵。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Should Hong Kong Ban Single-Use Plastics?</h3>
+        <p class="summary">Consider oceans, costs, and culture shifts.</p>
+        <div class="memory-tags"><span>Ban to Reset</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">A ban would sharply reduce marine pollution and protect sea life.</span><span class="zh">禁用即棄塑膠可大幅減少海洋污染並保護海洋生物。</span></li>
+          <li><span class="en">It nudges citizens toward reusable bags, bottles, and straws.</span><span class="zh">措施可促使市民改用可重用袋、瓶、吸管。</span></li>
+          <li><span class="en">Businesses may face upfront costs and convenience may dip.</span><span class="zh">企業或需面對前期成本，便利程度也會下降。</span></li>
+          <li><span class="en">Subsidies and education can smooth the transition.</span><span class="zh">透過補貼與教育可令過渡更順暢。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Environment & Sustainability">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Environment & Sustainability</span>
-                <h3>Protecting Endangered Species</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Biodiversity is public health insurance.</p>
-              <div class="memory-tags"><span>Balance Biodiversity</span></div>
-              <ul>
-                <li><span class="en">Each species keeps ecosystems balanced; losing one disrupts food chains.</span><span class="zh">每個物種維持生態平衡，失去一種便會破壞食物鏈。</span></li>
-                <li><span class="en">Biodiversity supplies ingredients for medicines.</span><span class="zh">生物多樣性提供藥物原料。</span></li>
-                <li><span class="en">Conservation preserves cultural and natural heritage.</span><span class="zh">保育工作保存文化與自然遺產。</span></li>
-                <li><span class="en">Ecotourism generates income that funds protection.</span><span class="zh">生態旅遊帶來收入支持保護工作。</span></li>
-                <li><span class="en">Indigenous and fisherfolk knowledge guides respectful habitat management.</span><span class="zh">原居民與漁民的知識有助於尊重地管理棲地。</span></li>
-                <li><span class="en">Citizen-science apps let hikers log sightings that inform scientists and policymakers.</span><span class="zh">公民科學應用程式讓行山者紀錄目擊，為科研與政策提供資料。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Protecting Endangered Species</h3>
+        <p class="summary">Biodiversity is public health insurance.</p>
+        <div class="memory-tags"><span>Balance Biodiversity</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Each species keeps ecosystems balanced; losing one disrupts food chains.</span><span class="zh">每個物種維持生態平衡，失去一種便會破壞食物鏈。</span></li>
+          <li><span class="en">Biodiversity supplies ingredients for medicines.</span><span class="zh">生物多樣性提供藥物原料。</span></li>
+          <li><span class="en">Conservation preserves cultural and natural heritage.</span><span class="zh">保育工作保存文化與自然遺產。</span></li>
+          <li><span class="en">Ecotourism generates income that funds protection.</span><span class="zh">生態旅遊帶來收入支持保護工作。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Environment & Sustainability">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Environment & Sustainability</span>
-                <h3>Are Electric Vehicles the Solution?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">EVs shine with renewables and transit upgrades.</p>
-              <div class="memory-tags"><span>Charge with Change</span></div>
-              <ul>
-                <li><span class="en">EVs cut tailpipe emissions and urban noise.</span><span class="zh">電動車可減少尾氣排放與城市噪音。</span></li>
-                <li><span class="en">Advancing batteries make EVs cheaper and longer ranged.</span><span class="zh">電池技術進步令電動車更便宜且續航更長。</span></li>
-                <li><span class="en">Electricity from coal still pollutes and batteries have environmental costs.</span><span class="zh">若電力來自燃煤仍會污染，而電池也有環境代價。</span></li>
-                <li><span class="en">EV impact is highest when paired with renewables and public transit.</span><span class="zh">當電動車與可再生能源及公共交通配合時效果最佳。</span></li>
-                <li><span class="en">Dense charging networks in housing estates and car parks make adoption practical.</span><span class="zh">在屋苑與停車場建立密集充電網絡才能實際推廣。</span></li>
-                <li><span class="en">Battery recycling plants recover rare metals, shrinking the need for new mining.</span><span class="zh">電池回收廠可回收稀有金屬，減少開採需求。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Are Electric Vehicles the Solution?</h3>
+        <p class="summary">EVs shine with renewables and transit upgrades.</p>
+        <div class="memory-tags"><span>Charge with Change</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">EVs cut tailpipe emissions and urban noise.</span><span class="zh">電動車可減少尾氣排放與城市噪音。</span></li>
+          <li><span class="en">Advancing batteries make EVs cheaper and longer ranged.</span><span class="zh">電池技術進步令電動車更便宜且續航更長。</span></li>
+          <li><span class="en">Electricity from coal still pollutes and batteries have environmental costs.</span><span class="zh">若電力來自燃煤仍會污染，而電池也有環境代價。</span></li>
+          <li><span class="en">EV impact is highest when paired with renewables and public transit.</span><span class="zh">當電動車與可再生能源及公共交通配合時效果最佳。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Environment & Sustainability">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Environment & Sustainability</span>
-                <h3>Encouraging Recycling & Reducing Waste</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Convenience, incentives, and education work together.</p>
-              <div class="memory-tags"><span>Bins + Benefits</span></div>
-              <ul>
-                <li><span class="en">Place clearly labelled recycling bins in every building.</span><span class="zh">在每棟建築放置標示清楚的回收箱。</span></li>
-                <li><span class="en">Offer incentives like deposit refunds for returned bottles.</span><span class="zh">提供如膠樽回收按金等獎勵。</span></li>
-                <li><span class="en">Educate via schools and media about sorting and impact.</span><span class="zh">透過學校與媒體教育分類方法及其影響。</span></li>
-                <li><span class="en">Enforce regulations and promote reuse alongside recycling.</span><span class="zh">加強管制並同時推廣減量與重用。</span></li>
-                <li><span class="en">Smart bins and apps track household recycling streaks and reward consistency.</span><span class="zh">智慧回收桶與應用程式可紀錄住戶回收連續天數並給予獎勵。</span></li>
-                <li><span class="en">Companies should design packaging that separates easily into single materials.</span><span class="zh">企業應設計易於拆解成單一物料的包裝。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Encouraging Recycling & Reducing Waste</h3>
+        <p class="summary">Convenience, incentives, and education work together.</p>
+        <div class="memory-tags"><span>Bins + Benefits</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Place clearly labelled recycling bins in every building.</span><span class="zh">在每棟建築放置標示清楚的回收箱。</span></li>
+          <li><span class="en">Offer incentives like deposit refunds for returned bottles.</span><span class="zh">提供如膠樽回收按金等獎勵。</span></li>
+          <li><span class="en">Educate via schools and media about sorting and impact.</span><span class="zh">透過學校與媒體教育分類方法及其影響。</span></li>
+          <li><span class="en">Enforce regulations and promote reuse alongside recycling.</span><span class="zh">加強管制並同時推廣減量與重用。</span></li>
+        </ul>
       </article>
 
       <!-- Health & Lifestyle -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Health & Lifestyle</span>
-          <span class="folder-meta">
-            <span class="folder-count">5 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Health & Lifestyle">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Health & Lifestyle</span>
-                <h3>Healthier Lifestyles for Hong Kong Youth</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Make healthy choices easy, fun, and affordable.</p>
-              <div class="memory-tags"><span>Move • Munch • Mentor</span></div>
-              <ul>
-                <li><span class="en">Schools should expand PE time and diversify sports choices.</span><span class="zh">學校應增加體育課時並提供多元運動選擇。</span></li>
-                <li><span class="en">Community centres can host affordable classes and hikes.</span><span class="zh">社區中心可開辦親民課程與遠足活動。</span></li>
-                <li><span class="en">Limit junk food advertising that targets teens.</span><span class="zh">限制針對青少年的垃圾食物廣告。</span></li>
-                <li><span class="en">Family cooking and influencer campaigns model balanced habits.</span><span class="zh">家庭共煮與 KOL 宣傳能示範均衡習慣。</span></li>
-                <li><span class="en">Update school lunch standards to cut sugary drinks and add seasonal vegetables.</span><span class="zh">更新學校午餐標準，減少含糖飲品並增添時令蔬菜。</span></li>
-                <li><span class="en">Youth ambassadors can co-design fitness challenges that feel trendy and inclusive.</span><span class="zh">青年大使可共同設計有潮流感且具包容性的健身挑戰。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Healthier Lifestyles for Hong Kong Youth</h3>
+        <p class="summary">Make healthy choices easy, fun, and affordable.</p>
+        <div class="memory-tags"><span>Move • Munch • Mentor</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Schools should expand PE time and diversify sports choices.</span><span class="zh">學校應增加體育課時並提供多元運動選擇。</span></li>
+          <li><span class="en">Community centres can host affordable classes and hikes.</span><span class="zh">社區中心可開辦親民課程與遠足活動。</span></li>
+          <li><span class="en">Limit junk food advertising that targets teens.</span><span class="zh">限制針對青少年的垃圾食物廣告。</span></li>
+          <li><span class="en">Family cooking and influencer campaigns model balanced habits.</span><span class="zh">家庭共煮與 KOL 宣傳能示範均衡習慣。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Health & Lifestyle">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Health & Lifestyle</span>
-                <h3>Rising Obesity: Causes & Solutions</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Tackle sedentary routines, diets, and stress.</p>
-              <div class="memory-tags"><span>Move More, Stress Less</span></div>
-              <ul>
-                <li><span class="en">Long study hours and screens reduce daily movement.</span><span class="zh">長時間讀書與使用螢幕降低日常活動量。</span></li>
-                <li><span class="en">Cheap fast food encourages high-calorie diets.</span><span class="zh">廉價快餐導致高熱量飲食。</span></li>
-                <li><span class="en">Stress triggers emotional eating of comfort foods.</span><span class="zh">壓力會引發情緒性進食。</span></li>
-                <li><span class="en">Urban parks, nutrition education, and wellness programmes promote healthier routines.</span><span class="zh">城市公園、營養教育與健康計畫可建立更健康的作息。</span></li>
-                <li><span class="en">Adequate sleep keeps hunger hormones steady and reduces late-night snacking.</span><span class="zh">充足睡眠能穩定飢餓荷爾蒙，減少宵夜。</span></li>
-                <li><span class="en">Active design like standing desks and stair prompts adds movement naturally.</span><span class="zh">站立式書桌與鼓勵行樓梯等主動式設計能自然增加活動量。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Rising Obesity: Causes & Solutions</h3>
+        <p class="summary">Tackle sedentary routines, diets, and stress.</p>
+        <div class="memory-tags"><span>Move More, Stress Less</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Long study hours and screens reduce daily movement.</span><span class="zh">長時間讀書與使用螢幕降低日常活動量。</span></li>
+          <li><span class="en">Cheap fast food encourages high-calorie diets.</span><span class="zh">廉價快餐導致高熱量飲食。</span></li>
+          <li><span class="en">Stress triggers emotional eating of comfort foods.</span><span class="zh">壓力會引發情緒性進食。</span></li>
+          <li><span class="en">Urban parks, nutrition education, and wellness programmes promote healthier routines.</span><span class="zh">城市公園、營養教育與健康計畫可建立更健康的作息。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Health & Lifestyle">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Health & Lifestyle</span>
-                <h3>Mental Health is Physical Health</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Provide equal care for mind and body in schools.</p>
-              <div class="memory-tags"><span>Mind = Body</span></div>
-              <ul>
-                <li><span class="en">Mental wellbeing is as crucial as physical fitness for learning and relationships.</span><span class="zh">心理健康與體能一樣重要，影響學習與人際。</span></li>
-                <li><span class="en">Stress-related mental issues can manifest as physical illness.</span><span class="zh">壓力引起的心理問題會演變成身體疾病。</span></li>
-                <li><span class="en">Schools need more trained counsellors and confidential services.</span><span class="zh">學校需要更多受訓輔導員與保密服務。</span></li>
-                <li><span class="en">Mindfulness lessons and peer support groups reduce stigma.</span><span class="zh">靜觀課與朋輩支援小組能減低標籤化。</span></li>
-                <li><span class="en">Teletherapy platforms widen access when students cannot travel during exam crunches.</span><span class="zh">線上治療平台讓考試旺季無法外出的學生也能獲得支援。</span></li>
-                <li><span class="en">Parent workshops teach supportive language and how to notice warning signs early.</span><span class="zh">家長工作坊可教授支持性的語言與及早識別警號的方法。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Mental Health is Physical Health</h3>
+        <p class="summary">Provide equal care for mind and body in schools.</p>
+        <div class="memory-tags"><span>Mind = Body</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Mental wellbeing is as crucial as physical fitness for learning and relationships.</span><span class="zh">心理健康與體能一樣重要，影響學習與人際。</span></li>
+          <li><span class="en">Stress-related mental issues can manifest as physical illness.</span><span class="zh">壓力引起的心理問題會演變成身體疾病。</span></li>
+          <li><span class="en">Schools need more trained counsellors and confidential services.</span><span class="zh">學校需要更多受訓輔導員與保密服務。</span></li>
+          <li><span class="en">Mindfulness lessons and peer support groups reduce stigma.</span><span class="zh">靜觀課與朋輩支援小組能減低標籤化。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Health & Lifestyle">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Health & Lifestyle</span>
-                <h3>The Effects of Fast Food Culture</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Convenience must not cost long-term health.</p>
-              <div class="memory-tags"><span>Fast ≠ Healthy</span></div>
-              <ul>
-                <li><span class="en">Fast food offers quick, low-cost meals for busy schedules.</span><span class="zh">快餐為忙碌生活提供快速又廉價的餐點。</span></li>
-                <li><span class="en">High fat, sugar, and salt raise obesity and heart disease risk.</span><span class="zh">高脂糖鹽會增加肥胖與心臟病風險。</span></li>
-                <li><span class="en">Menus often lack vitamins and balanced nutrition.</span><span class="zh">餐單往往缺乏維他命與均衡營養。</span></li>
-                <li><span class="en">It can replace home cooking traditions and shared family meals.</span><span class="zh">它會取代家常菜與家庭共餐傳統。</span></li>
-                <li><span class="en">Transparent nutrition labels on menus make sugar, fat, and sodium impossible to ignore.</span><span class="zh">餐牌上的透明營養標籤讓糖、脂肪與鈉含量無所遁形。</span></li>
-                <li><span class="en">Community kitchens and farmers' markets keep fresh, home-style cooking affordable.</span><span class="zh">社區廚房與農墟能讓新鮮家常菜保持親民。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>The Effects of Fast Food Culture</h3>
+        <p class="summary">Convenience must not cost long-term health.</p>
+        <div class="memory-tags"><span>Fast ≠ Healthy</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Fast food offers quick, low-cost meals for busy schedules.</span><span class="zh">快餐為忙碌生活提供快速又廉價的餐點。</span></li>
+          <li><span class="en">High fat, sugar, and salt raise obesity and heart disease risk.</span><span class="zh">高脂糖鹽會增加肥胖與心臟病風險。</span></li>
+          <li><span class="en">Menus often lack vitamins and balanced nutrition.</span><span class="zh">餐單往往缺乏維他命與均衡營養。</span></li>
+          <li><span class="en">It can replace home cooking traditions and shared family meals.</span><span class="zh">它會取代家常菜與家庭共餐傳統。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Health & Lifestyle">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Health & Lifestyle</span>
-                <h3>Balancing Study and Leisure</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Protect rest to power performance.</p>
-              <div class="memory-tags"><span>Plan to Pause</span></div>
-              <ul>
-                <li><span class="en">Healthy balance prevents burnout and sharpens focus.</span><span class="zh">健康平衡可防止倦怠並提高專注。</span></li>
-                <li><span class="en">Hobbies recharge creativity for academic tasks.</span><span class="zh">興趣活動能為學業補充創意。</span></li>
-                <li><span class="en">Scheduling fixed leisure blocks keeps rest non-negotiable.</span><span class="zh">預先安排休閒時段可確保休息不可被侵占。</span></li>
-                <li><span class="en">Device curfews protect sleep quality and next-day productivity.</span><span class="zh">設定裝置宵禁能保護睡眠與翌日效率。</span></li>
-                <li><span class="en">Pomodoro-style micro breaks refresh concentration before fatigue sets in.</span><span class="zh">番茄鐘式的微休息能在疲勞前刷新專注力。</span></li>
-                <li><span class="en">Mentors can audit weekly timetables and model how to defend downtime.</span><span class="zh">導師可檢視每週時間表並示範如何守護休息時間。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Balancing Study and Leisure</h3>
+        <p class="summary">Protect rest to power performance.</p>
+        <div class="memory-tags"><span>Plan to Pause</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Healthy balance prevents burnout and sharpens focus.</span><span class="zh">健康平衡可防止倦怠並提高專注。</span></li>
+          <li><span class="en">Hobbies recharge creativity for academic tasks.</span><span class="zh">興趣活動能為學業補充創意。</span></li>
+          <li><span class="en">Scheduling fixed leisure blocks keeps rest non-negotiable.</span><span class="zh">預先安排休閒時段可確保休息不可被侵占。</span></li>
+          <li><span class="en">Device curfews protect sleep quality and next-day productivity.</span><span class="zh">設定裝置宵禁能保護睡眠與翌日效率。</span></li>
+        </ul>
       </article>
 
       <!-- Hong Kong Society & Culture -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Hong Kong Society & Culture</span>
-          <span class="folder-meta">
-            <span class="folder-count">6 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Hong Kong Society & Culture">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">HK Society & Culture</span>
-                <h3>Preserving Hong Kong’s Culture</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Keep heritage visible, livable, and teachable.</p>
-              <div class="memory-tags"><span>Save • Share • Subsidise</span></div>
-              <ul>
-                <li><span class="en">Safeguard historic buildings and markets from redevelopment.</span><span class="zh">保護歷史建築與傳統市集免受重建。</span></li>
-                <li><span class="en">Teach Cantonese opera, dim sum culture, and festivals in schools.</span><span class="zh">在學校教授粵劇、點心文化與節慶。</span></li>
-                <li><span class="en">Heritage tours and festivals keep traditions engaging.</span><span class="zh">舉辦文化導賞與節慶讓傳統更吸引。</span></li>
-                <li><span class="en">Subsidise artisans so traditional crafts survive.</span><span class="zh">資助工藝師以延續傳統技藝。</span></li>
-                <li><span class="en">Digitising oral histories and neon signage archives preserves fragile memories.</span><span class="zh">把口述歷史與霓虹招牌數碼化，可保存易逝的記憶。</span></li>
-                <li><span class="en">Youth remix competitions let students reimagine traditions through fashion or AR.</span><span class="zh">青年改編比賽讓學生以時裝或 AR 重新演繹傳統。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Preserving Hong Kong’s Culture</h3>
+        <p class="summary">Keep heritage visible, livable, and teachable.</p>
+        <div class="memory-tags"><span>Save • Share • Subsidise</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Safeguard historic buildings and markets from redevelopment.</span><span class="zh">保護歷史建築與傳統市集免受重建。</span></li>
+          <li><span class="en">Teach Cantonese opera, dim sum culture, and festivals in schools.</span><span class="zh">在學校教授粵劇、點心文化與節慶。</span></li>
+          <li><span class="en">Heritage tours and festivals keep traditions engaging.</span><span class="zh">舉辦文化導賞與節慶讓傳統更吸引。</span></li>
+          <li><span class="en">Subsidise artisans so traditional crafts survive.</span><span class="zh">資助工藝師以延續傳統技藝。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Hong Kong Society & Culture">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">HK Society & Culture</span>
-                <h3>Ageing Population Challenges</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Innovate policy, labour, and care models.</p>
-              <div class="memory-tags"><span>5 Rs: Relief, Retire, Recruit, Robots, Respect</span></div>
-              <ul>
-                <li><span class="en">More seniors strain healthcare and pensions.</span><span class="zh">長者增加會給醫療與退休金帶來壓力。</span></li>
-                <li><span class="en">Fewer young workers support more retirees financially.</span><span class="zh">勞動人口減少需負擔更多退休人士。</span></li>
-                <li><span class="en">Solutions include boosting birth rates and attracting skilled talent.</span><span class="zh">方案包括提高生育率與吸納技術人才。</span></li>
-                <li><span class="en">Gradually raising retirement age and using care tech relieve pressure.</span><span class="zh">循序漸進延長退休年齡並採用護理科技能紓壓。</span></li>
-                <li><span class="en">Active community programmes keep seniors engaged and dignified.</span><span class="zh">積極的社區計畫讓長者保持參與與尊嚴。</span></li>
-                <li><span class="en">Silver-economy startups create wellness, tech, and caregiving roles for seniors.</span><span class="zh">銀髮經濟初創為長者提供健康、科技與護理相關職位。</span></li>
-                <li><span class="en">Barrier-free transport, lifts, and tactile street maps keep elders mobile.</span><span class="zh">無障礙交通、升降機與觸感街道地圖讓長者外出更自主。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Ageing Population Challenges</h3>
+        <p class="summary">Innovate policy, labour, and care models.</p>
+        <div class="memory-tags"><span>5 Rs: Relief, Retire, Recruit, Robots, Respect</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">More seniors strain healthcare and pensions.</span><span class="zh">長者增加會給醫療與退休金帶來壓力。</span></li>
+          <li><span class="en">Fewer young workers support more retirees financially.</span><span class="zh">勞動人口減少需負擔更多退休人士。</span></li>
+          <li><span class="en">Solutions include boosting birth rates and attracting skilled talent.</span><span class="zh">方案包括提高生育率與吸納技術人才。</span></li>
+          <li><span class="en">Gradually raising retirement age and using care tech relieve pressure.</span><span class="zh">循序漸進延長退休年齡並採用護理科技能紓壓。</span></li>
+          <li><span class="en">Active community programmes keep seniors engaged and dignified.</span><span class="zh">積極的社區計畫讓長者保持參與與尊嚴。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Hong Kong Society & Culture">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">HK Society & Culture</span>
-                <h3>Is Hong Kong Good for Youth Dreams?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Assess opportunities versus pressures.</p>
-              <div class="memory-tags"><span>High Opportunity, High Pressure</span></div>
-              <ul>
-                <li><span class="en">World-class education, finance, and tech sectors create diverse paths.</span><span class="zh">世界級教育、金融與科技產業提供多元道路。</span></li>
-                <li><span class="en">Start-ups and creative industries offer alternatives to traditional careers.</span><span class="zh">初創與創意產業提供傳統職涯以外的選擇。</span></li>
-                <li><span class="en">High living and housing costs make independence tough.</span><span class="zh">高生活與房屋成本讓獨立生活困難。</span></li>
-                <li><span class="en">Intense competition adds early-career pressure.</span><span class="zh">激烈競爭帶來早期職涯壓力。</span></li>
-                <li><span class="en">Strong networks and perseverance still help youths thrive.</span><span class="zh">善用人脈與毅力仍能讓年輕人有所發揮。</span></li>
-                <li><span class="en">Mentorship networks pair students with industry veterans for honest feedback.</span><span class="zh">導師網絡把學生與業內前輩連結，提供真實建議。</span></li>
-                <li><span class="en">Government and corporate seed funds can support youth-led social enterprises.</span><span class="zh">政府與企業種子基金可支援青年主導的社企。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Is Hong Kong Good for Youth Dreams?</h3>
+        <p class="summary">Assess opportunities versus pressures.</p>
+        <div class="memory-tags"><span>High Opportunity, High Pressure</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">World-class education, finance, and tech sectors create diverse paths.</span><span class="zh">世界級教育、金融與科技產業提供多元道路。</span></li>
+          <li><span class="en">Start-ups and creative industries offer alternatives to traditional careers.</span><span class="zh">初創與創意產業提供傳統職涯以外的選擇。</span></li>
+          <li><span class="en">High living and housing costs make independence tough.</span><span class="zh">高生活與房屋成本讓獨立生活困難。</span></li>
+          <li><span class="en">Intense competition adds early-career pressure.</span><span class="zh">激烈競爭帶來早期職涯壓力。</span></li>
+          <li><span class="en">Strong networks and perseverance still help youths thrive.</span><span class="zh">善用人脈與毅力仍能讓年輕人有所發揮。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Hong Kong Society & Culture">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">HK Society & Culture</span>
-                <h3>The Importance of Being Bilingual</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Master English and Chinese for global-local agility.</p>
-              <div class="memory-tags"><span>Two Tongues, Twice the Doors</span></div>
-              <ul>
-                <li><span class="en">English unlocks global study and career opportunities.</span><span class="zh">英語開啟全球升學與職涯機會。</span></li>
-                <li><span class="en">Chinese fluency connects with Mainland markets and culture.</span><span class="zh">中文流利有助連結內地市場與文化。</span></li>
-                <li><span class="en">Bilingualism enhances cultural understanding and flexibility.</span><span class="zh">雙語能力提升文化理解與應變力。</span></li>
-                <li><span class="en">Hong Kong's daily life naturally reinforces both languages.</span><span class="zh">香港日常生活自然同時強化兩種語言。</span></li>
-                <li><span class="en">Translation and interpreting roles are expanding across finance, law, and media.</span><span class="zh">翻譯與傳譯職位在金融、法律與媒體領域迅速增加。</span></li>
-                <li><span class="en">Code-switching skills build empathy because students read multiple cultural cues.</span><span class="zh">轉換語言的能力培養同理心，因為學生能解讀多元文化訊號。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>The Importance of Being Bilingual</h3>
+        <p class="summary">Master English and Chinese for global-local agility.</p>
+        <div class="memory-tags"><span>Two Tongues, Twice the Doors</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">English unlocks global study and career opportunities.</span><span class="zh">英語開啟全球升學與職涯機會。</span></li>
+          <li><span class="en">Chinese fluency connects with Mainland markets and culture.</span><span class="zh">中文流利有助連結內地市場與文化。</span></li>
+          <li><span class="en">Bilingualism enhances cultural understanding and flexibility.</span><span class="zh">雙語能力提升文化理解與應變力。</span></li>
+          <li><span class="en">Hong Kong's daily life naturally reinforces both languages.</span><span class="zh">香港日常生活自然同時強化兩種語言。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Hong Kong Society & Culture">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">HK Society & Culture</span>
-                <h3>Improving Tourism in Hong Kong</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Diversify experiences and raise service standards.</p>
-              <div class="memory-tags"><span>Nature • Culture • Service</span></div>
-              <ul>
-                <li><span class="en">Promote hiking trails and outlying islands beyond shopping.</span><span class="zh">推廣遠足徑及離島等購物以外景點。</span></li>
-                <li><span class="en">Highlight authentic local food and cultural festivals.</span><span class="zh">突出地道美食與文化節慶。</span></li>
-                <li><span class="en">Improve cleanliness, signage, and hospitality training.</span><span class="zh">改善環境衛生、指示系統與服務培訓。</span></li>
-                <li><span class="en">Adopt sustainable practices to protect attractions.</span><span class="zh">採用永續措施保護景點。</span></li>
-                <li><span class="en">Use digital marketing to reach niche travel interests.</span><span class="zh">運用數位行銷吸引特定興趣旅客。</span></li>
-                <li><span class="en">Night-time arts markets and data dashboards spread visitors across districts.</span><span class="zh">夜間藝術市集與即時數據可把旅客分散至不同地區。</span></li>
-              </ul>
-            </div>
-          </article>
-
-          <article class="topic-card" data-category="Hong Kong Society & Culture">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">HK Society & Culture</span>
-                <h3>Ethnic Minority Teenagers in Hong Kong</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Tackle identity challenges with inclusive support and language bridges.</p>
-              <div class="memory-tags"><span>Belong & Bridge</span><span>Language Lift</span></div>
-              <ul>
-                <li><span class="en">Limited media representation and stereotypes leave some teens feeling invisible.</span><span class="zh">媒體缺乏多元代表與刻板印象，令部分青少年覺得自己被忽視。</span></li>
-                <li><span class="en">Textbooks seldom highlight their histories, so pride in heritage can fade.</span><span class="zh">教材鮮少介紹其族裔歷史，令他們難以培養身分自豪感。</span></li>
-                <li><span class="en">Microaggressions in schools, housing, or job hunts remind them they are outsiders.</span><span class="zh">在校園、住屋或求職中遭遇的微歧視會不斷提醒他們是外人。</span></li>
-                <li><span class="en">Cultural ambassador or buddy programmes can welcome families into school events.</span><span class="zh">文化大使或朋輩結伴計畫可在學校活動中迎接其家庭。</span></li>
-                <li><span class="en">Community centres offering trilingual counselling build safe spaces to share concerns.</span><span class="zh">提供三語輔導的社區中心能成為安心訴說的空間。</span></li>
-                <li><span class="en">Tailored Cantonese curricula with phonetics and daily-life vocabulary speed up learning.</span><span class="zh">結合粵語拼音與日常詞彙的專屬課程可加速學習。</span></li>
-                <li><span class="en">Experiential immersion like service projects and workplace visits creates real reasons to use Chinese daily.</span><span class="zh">透過服務計畫與職場參訪等體驗式浸濡，可讓他們每天有實際理由使用中文。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Improving Tourism in Hong Kong</h3>
+        <p class="summary">Diversify experiences and raise service standards.</p>
+        <div class="memory-tags"><span>Nature • Culture • Service</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Promote hiking trails and outlying islands beyond shopping.</span><span class="zh">推廣遠足徑及離島等購物以外景點。</span></li>
+          <li><span class="en">Highlight authentic local food and cultural festivals.</span><span class="zh">突出地道美食與文化節慶。</span></li>
+          <li><span class="en">Improve cleanliness, signage, and hospitality training.</span><span class="zh">改善環境衛生、指示系統與服務培訓。</span></li>
+          <li><span class="en">Adopt sustainable practices to protect attractions.</span><span class="zh">採用永續措施保護景點。</span></li>
+          <li><span class="en">Use digital marketing to reach niche travel interests.</span><span class="zh">運用數位行銷吸引特定興趣旅客。</span></li>
+        </ul>
       </article>
 
       <!-- Work & Career -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Work & Career</span>
-          <span class="folder-meta">
-            <span class="folder-count">5 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Work & Career">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Work & Career</span>
-                <h3>Skills for the Future Workplace</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Blend thinking, tech, and people skills.</p>
-              <div class="memory-tags"><span>4Cs + EI</span></div>
-              <ul>
-                <li><span class="en">Critical thinking and problem-solving drive adaptation.</span><span class="zh">批判思維與解難力促進適應。</span></li>
-                <li><span class="en">Communication and teamwork enable cross-disciplinary collaboration.</span><span class="zh">溝通與團隊合作促成跨領域協作。</span></li>
-                <li><span class="en">Digital literacy keeps pace with evolving tools.</span><span class="zh">數碼素養讓人跟上工具變化。</span></li>
-                <li><span class="en">Emotional intelligence and lifelong learning sustain resilience.</span><span class="zh">情緒智商與終身學習維持韌性。</span></li>
-                <li><span class="en">Data storytelling turns analytics into persuasive narratives for leaders.</span><span class="zh">資料說故事能把分析轉化為說服力強的決策故事。</span></li>
-                <li><span class="en">Ethical decision frameworks guide how teams deploy AI responsibly.</span><span class="zh">倫理決策框架可指引團隊負責任地導入 AI。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Skills for the Future Workplace</h3>
+        <p class="summary">Blend thinking, tech, and people skills.</p>
+        <div class="memory-tags"><span>4Cs + EI</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Critical thinking and problem-solving drive adaptation.</span><span class="zh">批判思維與解難力促進適應。</span></li>
+          <li><span class="en">Communication and teamwork enable cross-disciplinary collaboration.</span><span class="zh">溝通與團隊合作促成跨領域協作。</span></li>
+          <li><span class="en">Digital literacy keeps pace with evolving tools.</span><span class="zh">數碼素養讓人跟上工具變化。</span></li>
+          <li><span class="en">Emotional intelligence and lifelong learning sustain resilience.</span><span class="zh">情緒智商與終身學習維持韌性。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Work & Career">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Work & Career</span>
-                <h3>Employee or Entrepreneur?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Choose stability or autonomy based on risk appetite.</p>
-              <div class="memory-tags"><span>Steady vs Stretch</span></div>
-              <ul>
-                <li><span class="en">Employees enjoy stable income, benefits, and predictable growth.</span><span class="zh">受僱者享有穩定收入、福利與可預期的晉升。</span></li>
-                <li><span class="en">Entrepreneurs pursue personal vision with higher risk and reward.</span><span class="zh">創業者以更高風險換取實踐理想與潛在回報。</span></li>
-                <li><span class="en">Running a business builds resilience and innovation skills.</span><span class="zh">經營企業能鍛鍊韌性與創新能力。</span></li>
-                <li><span class="en">Many start as employees to gain experience before launching ventures.</span><span class="zh">不少人先受僱累積經驗，再投入創業。</span></li>
-                <li><span class="en">Portfolio careers mix freelance gigs with part-time roles for flexibility.</span><span class="zh">組合式職涯把自由工作與兼職結合，增加彈性。</span></li>
-                <li><span class="en">Incubators and fintech tools cut paperwork so founders focus on innovation.</span><span class="zh">創業培育與金融科技工具能減少文書，讓創辦人專注創新。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Employee or Entrepreneur?</h3>
+        <p class="summary">Choose stability or autonomy based on risk appetite.</p>
+        <div class="memory-tags"><span>Steady vs Stretch</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Employees enjoy stable income, benefits, and predictable growth.</span><span class="zh">受僱者享有穩定收入、福利與可預期的晉升。</span></li>
+          <li><span class="en">Entrepreneurs pursue personal vision with higher risk and reward.</span><span class="zh">創業者以更高風險換取實踐理想與潛在回報。</span></li>
+          <li><span class="en">Running a business builds resilience and innovation skills.</span><span class="zh">經營企業能鍛鍊韌性與創新能力。</span></li>
+          <li><span class="en">Many start as employees to gain experience before launching ventures.</span><span class="zh">不少人先受僱累積經驗，再投入創業。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Work & Career">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Work & Career</span>
-                <h3>Should Students Have Part-Time Jobs?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Work experience must coexist with academics.</p>
-              <div class="memory-tags"><span>Earn & Learn</span></div>
-              <ul>
-                <li><span class="en">Part-time work teaches responsibility and time management.</span><span class="zh">兼職工作能培養責任感與時間管理。</span></li>
-                <li><span class="en">Earning pocket money reduces dependence on parents.</span><span class="zh">賺取零用錢可減少對父母的依賴。</span></li>
-                <li><span class="en">Excess hours can harm studies and rest.</span><span class="zh">過長工時會影響學業與休息。</span></li>
-                <li><span class="en">Flexible roles with limited hours give experience without burnout.</span><span class="zh">彈性且時數有限的工作可提供經驗而不致疲憊。</span></li>
-                <li><span class="en">Choosing roles linked to intended majors lets students test passions early.</span><span class="zh">選擇與目標科系相關的工作可早期試探興趣。</span></li>
-                <li><span class="en">Knowing labour laws and minimum wage rules prevents exploitation.</span><span class="zh">了解勞工法與最低工資規定可避免被剝削。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Should Students Have Part-Time Jobs?</h3>
+        <p class="summary">Work experience must coexist with academics.</p>
+        <div class="memory-tags"><span>Earn & Learn</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Part-time work teaches responsibility and time management.</span><span class="zh">兼職工作能培養責任感與時間管理。</span></li>
+          <li><span class="en">Earning pocket money reduces dependence on parents.</span><span class="zh">賺取零用錢可減少對父母的依賴。</span></li>
+          <li><span class="en">Excess hours can harm studies and rest.</span><span class="zh">過長工時會影響學業與休息。</span></li>
+          <li><span class="en">Flexible roles with limited hours give experience without burnout.</span><span class="zh">彈性且時數有限的工作可提供經驗而不致疲憊。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Work & Career">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Work & Career</span>
-                <h3>Pros & Cons of Remote Work</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Design routines that mix autonomy and connection.</p>
-              <div class="memory-tags"><span>Hybrid Sweet Spot</span></div>
-              <ul>
-                <li><span class="en">Remote work cuts commuting and improves flexibility.</span><span class="zh">遠距工作減少通勤並提高彈性。</span></li>
-                <li><span class="en">Comfortable home setups can boost productivity.</span><span class="zh">舒適的家中環境可提升效率。</span></li>
-                <li><span class="en">Isolation and blurred boundaries may hurt wellbeing.</span><span class="zh">孤立感與界線模糊可能損害身心。</span></li>
-                <li><span class="en">Hybrid models blend freedom with team connection.</span><span class="zh">混合模式結合自由與團隊連結。</span></li>
-                <li><span class="en">Coworking passes or library booths help workers in small flats stay productive.</span><span class="zh">共用工作空間或圖書館自修室能讓居住狹小者保持效率。</span></li>
-                <li><span class="en">Secure VPN habits and regular device checks protect company data.</span><span class="zh">良好的 VPN 使用習慣與定期裝置檢查能保護公司資料。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Pros & Cons of Remote Work</h3>
+        <p class="summary">Design routines that mix autonomy and connection.</p>
+        <div class="memory-tags"><span>Hybrid Sweet Spot</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Remote work cuts commuting and improves flexibility.</span><span class="zh">遠距工作減少通勤並提高彈性。</span></li>
+          <li><span class="en">Comfortable home setups can boost productivity.</span><span class="zh">舒適的家中環境可提升效率。</span></li>
+          <li><span class="en">Isolation and blurred boundaries may hurt wellbeing.</span><span class="zh">孤立感與界線模糊可能損害身心。</span></li>
+          <li><span class="en">Hybrid models blend freedom with team connection.</span><span class="zh">混合模式結合自由與團隊連結。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Work & Career">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Work & Career</span>
-                <h3>Preparing for a Global Career</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Language, exposure, adaptability, and networking matter.</p>
-              <div class="memory-tags"><span>Languages + Lenses</span></div>
-              <ul>
-                <li><span class="en">Learn extra languages and cultural norms.</span><span class="zh">學習更多語言及文化禮儀。</span></li>
-                <li><span class="en">Seek overseas exchanges or internships for real exposure.</span><span class="zh">透過海外交流或實習獲取實戰經驗。</span></li>
-                <li><span class="en">Build digital skills and adaptability for varied workplaces.</span><span class="zh">培養數碼技能與適應力以應對不同職場。</span></li>
-                <li><span class="en">Network internationally and track global trends.</span><span class="zh">建立國際人脈並緊貼全球趨勢。</span></li>
-                <li><span class="en">Digital portfolios showcase cross-border projects and bilingual deliverables.</span><span class="zh">數位作品集可展示跨地域專案與雙語成果。</span></li>
-                <li><span class="en">International mentors found through alumni groups accelerate cultural fluency.</span><span class="zh">透過校友社群尋得的國際導師能加快文化適應。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Preparing for a Global Career</h3>
+        <p class="summary">Language, exposure, adaptability, and networking matter.</p>
+        <div class="memory-tags"><span>Languages + Lenses</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Learn extra languages and cultural norms.</span><span class="zh">學習更多語言及文化禮儀。</span></li>
+          <li><span class="en">Seek overseas exchanges or internships for real exposure.</span><span class="zh">透過海外交流或實習獲取實戰經驗。</span></li>
+          <li><span class="en">Build digital skills and adaptability for varied workplaces.</span><span class="zh">培養數碼技能與適應力以應對不同職場。</span></li>
+          <li><span class="en">Network internationally and track global trends.</span><span class="zh">建立國際人脈並緊貼全球趨勢。</span></li>
+        </ul>
       </article>
 
       <!-- Ethics & Social Issues -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Ethics & Social Issues</span>
-          <span class="folder-meta">
-            <span class="folder-count">6 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Ethics & Social Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Ethics & Social Issues</span>
-                <h3>Citizens’ Responsibilities</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Active citizens strengthen communities.</p>
-              <div class="memory-tags"><span>Vote • Volunteer</span></div>
-              <ul>
-                <li><span class="en">Vote responsibly, obey laws, and stay informed.</span><span class="zh">負責任地投票、守法並保持知情。</span></li>
-                <li><span class="en">Participate in community clean-ups and events.</span><span class="zh">參與社區清潔與活動。</span></li>
-                <li><span class="en">Help neighbours and report local issues promptly.</span><span class="zh">主動幫助鄰里並及時反映問題。</span></li>
-                <li><span class="en">Promote inclusivity and environmental care.</span><span class="zh">倡導共融與環境保護。</span></li>
-                <li><span class="en">Join community disaster drills to stay ready for typhoons or pandemics.</span><span class="zh">參加社區防災演習可為颱風或疫情做好準備。</span></li>
-                <li><span class="en">Practice respectful dialogue even when opinions clash online.</span><span class="zh">即使網上意見不合，也要保持尊重的對話方式。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Citizens’ Responsibilities</h3>
+        <p class="summary">Active citizens strengthen communities.</p>
+        <div class="memory-tags"><span>Vote • Volunteer</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Vote responsibly, obey laws, and stay informed.</span><span class="zh">負責任地投票、守法並保持知情。</span></li>
+          <li><span class="en">Participate in community clean-ups and events.</span><span class="zh">參與社區清潔與活動。</span></li>
+          <li><span class="en">Help neighbours and report local issues promptly.</span><span class="zh">主動幫助鄰里並及時反映問題。</span></li>
+          <li><span class="en">Promote inclusivity and environmental care.</span><span class="zh">倡導共融與環境保護。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Ethics & Social Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Ethics & Social Issues</span>
-                <h3>Ethics of Animal Testing</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Weigh medical gains against moral costs.</p>
-              <div class="memory-tags"><span>Replace, Reduce, Refine</span></div>
-              <ul>
-                <li><span class="en">Regulated testing has enabled vaccines and medical breakthroughs.</span><span class="zh">受監管的動物實驗促成疫苗與醫療突破。</span></li>
-                <li><span class="en">Emerging alternatives like simulations reduce the need.</span><span class="zh">電腦模擬等新方法可降低需求。</span></li>
-                <li><span class="en">Animal suffering raises serious moral concerns.</span><span class="zh">動物受苦引發重大道德疑慮。</span></li>
-                <li><span class="en">Strict guidelines should minimise harm while research continues.</span><span class="zh">嚴格指引應在研究中盡量減害。</span></li>
-                <li><span class="en">Publishing transparent welfare audits builds public trust in laboratories.</span><span class="zh">公開透明的動物福利稽核能建立社會信任。</span></li>
-                <li><span class="en">Demand for cruelty-free products pushes firms to invest in alternatives.</span><span class="zh">對零殘忍產品的需求上升，促使企業投資替代方案。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Ethics of Animal Testing</h3>
+        <p class="summary">Weigh medical gains against moral costs.</p>
+        <div class="memory-tags"><span>Replace, Reduce, Refine</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Regulated testing has enabled vaccines and medical breakthroughs.</span><span class="zh">受監管的動物實驗促成疫苗與醫療突破。</span></li>
+          <li><span class="en">Emerging alternatives like simulations reduce the need.</span><span class="zh">電腦模擬等新方法可降低需求。</span></li>
+          <li><span class="en">Animal suffering raises serious moral concerns.</span><span class="zh">動物受苦引發重大道德疑慮。</span></li>
+          <li><span class="en">Strict guidelines should minimise harm while research continues.</span><span class="zh">嚴格指引應在研究中盡量減害。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Ethics & Social Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Ethics & Social Issues</span>
-                <h3>Closing the Rich-Poor Gap</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Combine fiscal policy with social programmes.</p>
-              <div class="memory-tags"><span>Tax • Train • Treat Fair</span></div>
-              <ul>
-                <li><span class="en">Progressive taxes fund social welfare and education.</span><span class="zh">累進稅制為社福與教育提供資金。</span></li>
-                <li><span class="en">Job training and affordable housing boost mobility.</span><span class="zh">職訓與可負擔住房可提升向上流動。</span></li>
-                <li><span class="en">Raising minimum wages ensures fair pay.</span><span class="zh">提高最低工資可確保合理報酬。</span></li>
-                <li><span class="en">Corporate responsibility and philanthropy support community programmes.</span><span class="zh">企業責任與慈善可支援社區計畫。</span></li>
-                <li><span class="en">Social enterprises reinvest profits into training local residents.</span><span class="zh">社企會把利潤再投資於培訓本地居民。</span></li>
-                <li><span class="en">Affordable childcare frees parents—especially women—to pursue careers.</span><span class="zh">可負擔的托兒服務讓家長，特別是女性，能專注工作。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Closing the Rich-Poor Gap</h3>
+        <p class="summary">Combine fiscal policy with social programmes.</p>
+        <div class="memory-tags"><span>Tax • Train • Treat Fair</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Progressive taxes fund social welfare and education.</span><span class="zh">累進稅制為社福與教育提供資金。</span></li>
+          <li><span class="en">Job training and affordable housing boost mobility.</span><span class="zh">職訓與可負擔住房可提升向上流動。</span></li>
+          <li><span class="en">Raising minimum wages ensures fair pay.</span><span class="zh">提高最低工資可確保合理報酬。</span></li>
+          <li><span class="en">Corporate responsibility and philanthropy support community programmes.</span><span class="zh">企業責任與慈善可支援社區計畫。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Ethics & Social Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Ethics & Social Issues</span>
-                <h3>The Importance of Volunteer Work</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Serve others to grow yourself.</p>
-              <div class="memory-tags"><span>Give & Grow</span></div>
-              <ul>
-                <li><span class="en">Volunteering builds empathy, leadership, and practical skills.</span><span class="zh">義工服務培養同理心、領導力與實用技能。</span></li>
-                <li><span class="en">It delivers direct help via tutoring, food drives, or clean-ups.</span><span class="zh">透過補習、食物捐贈或清潔行動直接幫助他人。</span></li>
-                <li><span class="en">Volunteers gain personal fulfilment and friendships.</span><span class="zh">義工能獲得成就感與友誼。</span></li>
-                <li><span class="en">Consistent service strengthens university and job applications.</span><span class="zh">長期服務能強化大學與求職申請。</span></li>
-                <li><span class="en">Skills badges and supervisor references document growth for resumes.</span><span class="zh">技能徽章與導師推薦信可為履歷記錄成長。</span></li>
-                <li><span class="en">Intergenerational projects pair youths with elders for mutual learning.</span><span class="zh">跨代計畫把年輕人與長者配對，雙向學習。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>The Importance of Volunteer Work</h3>
+        <p class="summary">Serve others to grow yourself.</p>
+        <div class="memory-tags"><span>Give & Grow</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Volunteering builds empathy, leadership, and practical skills.</span><span class="zh">義工服務培養同理心、領導力與實用技能。</span></li>
+          <li><span class="en">It delivers direct help via tutoring, food drives, or clean-ups.</span><span class="zh">透過補習、食物捐贈或清潔行動直接幫助他人。</span></li>
+          <li><span class="en">Volunteers gain personal fulfilment and friendships.</span><span class="zh">義工能獲得成就感與友誼。</span></li>
+          <li><span class="en">Consistent service strengthens university and job applications.</span><span class="zh">長期服務能強化大學與求職申請。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Ethics & Social Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Ethics & Social Issues</span>
-                <h3>Dealing with Cyberbullying</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Prevention, reporting, and support must align.</p>
-              <div class="memory-tags"><span>Report • Educate • Support</span></div>
-              <ul>
-                <li><span class="en">Schools and platforms need fast, transparent reporting systems.</span><span class="zh">學校與平台需設迅速透明的檢舉系統。</span></li>
-                <li><span class="en">Teach respectful online behaviour from early years.</span><span class="zh">從小教育尊重的網上行為。</span></li>
-                <li><span class="en">Provide counselling to help victims rebuild confidence.</span><span class="zh">提供輔導協助受害者重建自信。</span></li>
-                <li><span class="en">Parental guidance and open dialogue keep kids safe.</span><span class="zh">父母指導與開放對話能保障孩子安全。</span></li>
-                <li><span class="en">Restorative circles can help offenders face victims and understand harm.</span><span class="zh">復和圈讓施害者面對受害者並理解傷害。</span></li>
-                <li><span class="en">AI moderation tools flag hateful content before it spreads widely.</span><span class="zh">AI 審查工具可在仇恨內容擴散前提出警示。</span></li>
-              </ul>
-            </div>
-          </article>
-
-          <article class="topic-card" data-category="Ethics & Social Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Ethics & Social Issues</span>
-                <h3>Victims and Spam/Scams</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Spot scam tactics, coordinate rescue steps, and boost prevention.</p>
-              <div class="memory-tags"><span>Stay Alert</span><span>Rescue Net</span></div>
-              <ul>
-                <li><span class="en">Trafficking ads promise luxury salaries, free travel, and urgency so victims decide before verifying.</span><span class="zh">人口販運廣告以豪華薪酬、免費旅程與緊迫感誘惑，讓受害者來不及核實。</span></li>
-                <li><span class="en">Scammers clone company logos and use fake “friends” to establish false trust.</span><span class="zh">騙徒複製公司標誌並打造假「朋友」見證以建立信任。</span></li>
-                <li><span class="en">Families should save every message, keep contracts, and alert police, consulates, and NGOs immediately.</span><span class="zh">家屬應截圖所有訊息、保存合約，並即時向警方、領事館及民間組織求助。</span></li>
-                <li><span class="en">Victims can use safe words, GPS photos, or cloud backups to covertly send location clues.</span><span class="zh">受害者可透過暗語、定位照片或雲端備份偷偷傳遞位置線索。</span></li>
-                <li><span class="en">Embassy hotlines and civil task forces coordinate with regional authorities for rescues.</span><span class="zh">使領館熱線與民間工作小組會聯同區域政府協調救援。</span></li>
-                <li><span class="en">Prevention means verifying recruiter licences, searching reviews, and calling employers directly before paying.</span><span class="zh">預防需先核實招聘牌照、查閱評價並直接致電僱主，再決定是否付款。</span></li>
-                <li><span class="en">Schools and youth centres can role-play scam scenarios so students practise saying no.</span><span class="zh">學校與青年中心可透過情境演練，讓學生練習拒絕可疑邀約。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Dealing with Cyberbullying</h3>
+        <p class="summary">Prevention, reporting, and support must align.</p>
+        <div class="memory-tags"><span>Report • Educate • Support</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Schools and platforms need fast, transparent reporting systems.</span><span class="zh">學校與平台需設迅速透明的檢舉系統。</span></li>
+          <li><span class="en">Teach respectful online behaviour from early years.</span><span class="zh">從小教育尊重的網上行為。</span></li>
+          <li><span class="en">Provide counselling to help victims rebuild confidence.</span><span class="zh">提供輔導協助受害者重建自信。</span></li>
+          <li><span class="en">Parental guidance and open dialogue keep kids safe.</span><span class="zh">父母指導與開放對話能保障孩子安全。</span></li>
+        </ul>
       </article>
 
       <!-- Leisure & Entertainment -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Leisure & Entertainment</span>
-          <span class="folder-meta">
-            <span class="folder-count">5 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Leisure & Entertainment">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Leisure & Entertainment</span>
-                <h3>K-pop & Global Entertainment Influence</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Celebrate global trends without losing local voice.</p>
-              <div class="memory-tags"><span>World + Local</span></div>
-              <ul>
-                <li><span class="en">Global pop inspires dance, language learning, and creativity.</span><span class="zh">全球流行文化激發舞蹈、語言學習與創意。</span></li>
-                <li><span class="en">Online fandoms connect youths worldwide.</span><span class="zh">網上粉絲圈連結世界各地年輕人。</span></li>
-                <li><span class="en">Overexposure may overshadow local Cantopop traditions.</span><span class="zh">過度受外來文化影響或會掩蓋本地粵語流行曲。</span></li>
-                <li><span class="en">Imported beauty standards can impact self-image.</span><span class="zh">外來審美標準可能影響自我形象。</span></li>
-                <li><span class="en">Balanced appreciation keeps local identity alive.</span><span class="zh">平衡欣賞能維護本土身份。</span></li>
-                <li><span class="en">Merch shops, dance studios, and tours create local jobs while media literacy keeps confidence high.</span><span class="zh">周邊商店、舞蹈室與主題旅遊帶動本地就業，而媒體素養則維持自信。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>K-pop & Global Entertainment Influence</h3>
+        <p class="summary">Celebrate global trends without losing local voice.</p>
+        <div class="memory-tags"><span>World + Local</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Global pop inspires dance, language learning, and creativity.</span><span class="zh">全球流行文化激發舞蹈、語言學習與創意。</span></li>
+          <li><span class="en">Online fandoms connect youths worldwide.</span><span class="zh">網上粉絲圈連結世界各地年輕人。</span></li>
+          <li><span class="en">Overexposure may overshadow local Cantopop traditions.</span><span class="zh">過度受外來文化影響或會掩蓋本地粵語流行曲。</span></li>
+          <li><span class="en">Imported beauty standards can impact self-image.</span><span class="zh">外來審美標準可能影響自我形象。</span></li>
+          <li><span class="en">Balanced appreciation keeps local identity alive.</span><span class="zh">平衡欣賞能維護本土身份。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Leisure & Entertainment">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Leisure & Entertainment</span>
-                <h3>Video Games: Hobby or Addiction?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Enjoy benefits while guarding against excess.</p>
-              <div class="memory-tags"><span>Play Smart</span></div>
-              <ul>
-                <li><span class="en">Games sharpen reflexes, strategy, and teamwork.</span><span class="zh">遊戲可提升反應、策略與團隊合作。</span></li>
-                <li><span class="en">Educational titles teach history or science engagingly.</span><span class="zh">教育遊戲以有趣方式教授歷史或科學。</span></li>
-                <li><span class="en">Excessive play risks addiction, inactivity, and poor sleep.</span><span class="zh">過度遊玩會導致上癮、缺乏運動與睡眠不足。</span></li>
-                <li><span class="en">Content should be moderated to avoid harmful themes.</span><span class="zh">應節制內容以避免不良題材。</span></li>
-                <li><span class="en">Parental guidance ensures moderation.</span><span class="zh">家長指導可確保適度遊玩。</span></li>
-                <li><span class="en">E-sports scholarships, careers, and family playtime agreements keep gaming purposeful and balanced.</span><span class="zh">電競獎學金、職涯與家庭遊戲時間協議讓遊戲更具目的且保持平衡。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Video Games: Hobby or Addiction?</h3>
+        <p class="summary">Enjoy benefits while guarding against excess.</p>
+        <div class="memory-tags"><span>Play Smart</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Games sharpen reflexes, strategy, and teamwork.</span><span class="zh">遊戲可提升反應、策略與團隊合作。</span></li>
+          <li><span class="en">Educational titles teach history or science engagingly.</span><span class="zh">教育遊戲以有趣方式教授歷史或科學。</span></li>
+          <li><span class="en">Excessive play risks addiction, inactivity, and poor sleep.</span><span class="zh">過度遊玩會導致上癮、缺乏運動與睡眠不足。</span></li>
+          <li><span class="en">Content should be moderated to avoid harmful themes.</span><span class="zh">應節制內容以避免不良題材。</span></li>
+          <li><span class="en">Parental guidance ensures moderation.</span><span class="zh">家長指導可確保適度遊玩。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Leisure & Entertainment">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Leisure & Entertainment</span>
-                <h3>Reading Books vs Watching Films</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Use both mediums for richer stories.</p>
-              <div class="memory-tags"><span>Page + Screen</span></div>
-              <ul>
-                <li><span class="en">Reading expands vocabulary and imagination.</span><span class="zh">閱讀能擴充詞彙與想像力。</span></li>
-                <li><span class="en">Books allow personal pacing and deep perspectives.</span><span class="zh">書籍讓人依步調深入體會觀點。</span></li>
-                <li><span class="en">Films deliver visual and emotional impact quickly.</span><span class="zh">電影能迅速帶來視覺與情感震撼。</span></li>
-                <li><span class="en">Soundtracks and acting bring stories to life for shared experiences.</span><span class="zh">配樂與演技令故事鮮活並提供共享體驗。</span></li>
-                <li><span class="en">Using both formats enriches comprehension.</span><span class="zh">雙管齊下能加深理解。</span></li>
-                <li><span class="en">Book and film clubs plus adaptations often inspire readers to return to the original.</span><span class="zh">讀書會、電影會與改編作品常激發觀眾重讀原著。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Reading Books vs Watching Films</h3>
+        <p class="summary">Use both mediums for richer stories.</p>
+        <div class="memory-tags"><span>Page + Screen</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Reading expands vocabulary and imagination.</span><span class="zh">閱讀能擴充詞彙與想像力。</span></li>
+          <li><span class="en">Books allow personal pacing and deep perspectives.</span><span class="zh">書籍讓人依步調深入體會觀點。</span></li>
+          <li><span class="en">Films deliver visual and emotional impact quickly.</span><span class="zh">電影能迅速帶來視覺與情感震撼。</span></li>
+          <li><span class="en">Soundtracks and acting bring stories to life for shared experiences.</span><span class="zh">配樂與演技令故事鮮活並提供共享體驗。</span></li>
+          <li><span class="en">Using both formats enriches comprehension.</span><span class="zh">雙管齊下能加深理解。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Leisure & Entertainment">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Leisure & Entertainment</span>
-                <h3>Developing Work-Life Balance</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Plan boundaries to protect joy.</p>
-              <div class="memory-tags"><span>Boundaries = Balance</span></div>
-              <ul>
-                <li><span class="en">Set boundaries such as no work emails after hours.</span><span class="zh">設定下班後不收工作電郵等界線。</span></li>
-                <li><span class="en">Schedule hobbies, exercise, and relationships like important meetings.</span><span class="zh">把興趣、運動與人際關係排入行事曆。</span></li>
-                <li><span class="en">Efficient time management prevents tasks spilling into rest.</span><span class="zh">有效時間管理可避免工作侵占休息。</span></li>
-                <li><span class="en">Supportive employers and flexible hours sustain balance.</span><span class="zh">支持性的雇主與彈性工時有助維持平衡。</span></li>
-                <li><span class="en">Mental-health days and personal leave policies normalise taking restorative breaks.</span><span class="zh">心理健康假與個人假政策讓休息更正常化。</span></li>
-                <li><span class="en">Automation and delegation tools prevent admin work from invading evenings.</span><span class="zh">自動化與授權工具可避免行政工作侵佔夜晚。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Developing Work-Life Balance</h3>
+        <p class="summary">Plan boundaries to protect joy.</p>
+        <div class="memory-tags"><span>Boundaries = Balance</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Set boundaries such as no work emails after hours.</span><span class="zh">設定下班後不收工作電郵等界線。</span></li>
+          <li><span class="en">Schedule hobbies, exercise, and relationships like important meetings.</span><span class="zh">把興趣、運動與人際關係排入行事曆。</span></li>
+          <li><span class="en">Efficient time management prevents tasks spilling into rest.</span><span class="zh">有效時間管理可避免工作侵占休息。</span></li>
+          <li><span class="en">Supportive employers and flexible hours sustain balance.</span><span class="zh">支持性的雇主與彈性工時有助維持平衡。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Leisure & Entertainment">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Leisure & Entertainment</span>
-                <h3>Is Travel Necessary for Education?</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Experience cultures firsthand whenever possible.</p>
-              <div class="memory-tags"><span>Go, Grow, Know</span></div>
-              <ul>
-                <li><span class="en">Travel immerses students in diverse cultures and histories.</span><span class="zh">旅遊讓學生沉浸於多元文化與歷史。</span></li>
-                <li><span class="en">Experiencing new lifestyles builds independence and adaptability.</span><span class="zh">體驗新生活方式能建立獨立與適應力。</span></li>
-                <li><span class="en">It fosters tolerance and global awareness.</span><span class="zh">旅遊培養寬容與全球視野。</span></li>
-                <li><span class="en">Virtual tours help those who cannot travel, but real visits remain unmatched.</span><span class="zh">虛擬導覽幫助無法出行者，但親身體驗仍無可取代。</span></li>
-                <li><span class="en">Service-learning trips link travel to meaningful community impact.</span><span class="zh">服務學習旅行把旅遊與有意義的社區影響連結。</span></li>
-                <li><span class="en">Planning low-carbon itineraries keeps global exploration responsible.</span><span class="zh">規劃低碳行程讓環球探索更具環保責任。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Is Travel Necessary for Education?</h3>
+        <p class="summary">Experience cultures firsthand whenever possible.</p>
+        <div class="memory-tags"><span>Go, Grow, Know</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Travel immerses students in diverse cultures and histories.</span><span class="zh">旅遊讓學生沉浸於多元文化與歷史。</span></li>
+          <li><span class="en">Experiencing new lifestyles builds independence and adaptability.</span><span class="zh">體驗新生活方式能建立獨立與適應力。</span></li>
+          <li><span class="en">It fosters tolerance and global awareness.</span><span class="zh">旅遊培養寬容與全球視野。</span></li>
+          <li><span class="en">Virtual tours help those who cannot travel, but real visits remain unmatched.</span><span class="zh">虛擬導覽幫助無法出行者，但親身體驗仍無可取代。</span></li>
+        </ul>
       </article>
 
       <!-- Global Issues -->
-      <article class="category-folder open">
-        <button class="folder-toggle" type="button" aria-expanded="true">
-          <span class="folder-title">Global Issues</span>
-          <span class="folder-meta">
-            <span class="folder-count">3 topics</span>
-            <span class="folder-indicator">−</span>
-          </span>
-        </button>
-        <div class="topics">
-          <article class="topic-card" data-category="Global Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Global Issues</span>
-                <h3>Global Cooperation on Big Problems</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Shared crises require shared commitments.</p>
-              <div class="memory-tags"><span>Treaties + Teamwork</span></div>
-              <ul>
-                <li><span class="en">Agreements like the Paris Accord set shared climate targets.</span><span class="zh">《巴黎協定》等協議訂立共同的氣候目標。</span></li>
-                <li><span class="en">Joint research and resource sharing speed up breakthroughs.</span><span class="zh">共同研究與資源共享能加速突破。</span></li>
-                <li><span class="en">The UN coordinates efforts and mediates disputes.</span><span class="zh">聯合國協調行動並調解爭端。</span></li>
-                <li><span class="en">Funding support for developing nations ensures inclusive progress.</span><span class="zh">對發展中國家的資金支援確保包容的進步。</span></li>
-                <li><span class="en">Shared pandemic playbooks speed vaccine sharing and medical deployments.</span><span class="zh">共享防疫手冊可加快疫苗與醫療資源調配。</span></li>
-                <li><span class="en">Youth climate delegates keep negotiators accountable between summits.</span><span class="zh">青年氣候代表能在峰會之間督促談判代表履行承諾。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Global Issues">
+        <span class="badge">Global Issues</span>
+        <h3>Global Cooperation on Big Problems</h3>
+        <p class="summary">Shared crises require shared commitments.</p>
+        <div class="memory-tags"><span>Treaties + Teamwork</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Agreements like the Paris Accord set shared climate targets.</span><span class="zh">《巴黎協定》等協議訂立共同的氣候目標。</span></li>
+          <li><span class="en">Joint research and resource sharing speed up breakthroughs.</span><span class="zh">共同研究與資源共享能加速突破。</span></li>
+          <li><span class="en">The UN coordinates efforts and mediates disputes.</span><span class="zh">聯合國協調行動並調解爭端。</span></li>
+          <li><span class="en">Funding support for developing nations ensures inclusive progress.</span><span class="zh">對發展中國家的資金支援確保包容的進步。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Global Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Global Issues</span>
-                <h3>Globalization’s Impact on Local Cultures</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Blend enrichment with preservation.</p>
-              <div class="memory-tags"><span>Open yet Original</span></div>
-              <ul>
-                <li><span class="en">Globalization introduces new foods, music, and ideas.</span><span class="zh">全球化帶來新飲食、音樂與理念。</span></li>
-                <li><span class="en">It enhances cultural exchange and understanding.</span><span class="zh">它促進文化交流與理解。</span></li>
-                <li><span class="en">Dominant cultures can overshadow local languages and crafts.</span><span class="zh">主流文化可能掩蓋本地語言與工藝。</span></li>
-                <li><span class="en">Preservation efforts must accompany openness to stay unique.</span><span class="zh">在保持開放同時必須保存才能維持獨特性。</span></li>
-                <li><span class="en">Fusion eateries show how culinary creativity thrives when cultures meet.</span><span class="zh">融合餐廳展現文化交流能激發飲食創意。</span></li>
-                <li><span class="en">Supporting local-language media ensures dialects and neighbourhood stories survive.</span><span class="zh">支持本地語言媒體可保存方言與社區故事。</span></li>
-              </ul>
-            </div>
-          </article>
+      <article class="card expanded" data-category="Global Issues">
+        <span class="badge">Global Issues</span>
+        <h3>Globalization’s Impact on Local Cultures</h3>
+        <p class="summary">Blend enrichment with preservation.</p>
+        <div class="memory-tags"><span>Open yet Original</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">Globalization introduces new foods, music, and ideas.</span><span class="zh">全球化帶來新飲食、音樂與理念。</span></li>
+          <li><span class="en">It enhances cultural exchange and understanding.</span><span class="zh">它促進文化交流與理解。</span></li>
+          <li><span class="en">Dominant cultures can overshadow local languages and crafts.</span><span class="zh">主流文化可能掩蓋本地語言與工藝。</span></li>
+          <li><span class="en">Preservation efforts must accompany openness to stay unique.</span><span class="zh">在保持開放同時必須保存才能維持獨特性。</span></li>
+        </ul>
+      </article>
 
-          <article class="topic-card" data-category="Global Issues">
-            <button class="topic-toggle" type="button" aria-expanded="false">
-              <div class="topic-heading">
-                <span class="badge">Global Issues</span>
-                <h3>Role of the United Nations in Peace</h3>
-              </div>
-              <span class="topic-indicator">+</span>
-            </button>
-            <div class="topic-content">
-              <p class="summary">Reform and resources keep peacekeeping relevant.</p>
-              <div class="memory-tags"><span>Mediate • Protect • Reform</span></div>
-              <ul>
-                <li><span class="en">The UN offers diplomatic platforms to defuse conflicts.</span><span class="zh">聯合國提供外交平台化解衝突。</span></li>
-                <li><span class="en">Peacekeepers protect civilians in unstable regions.</span><span class="zh">維和部隊在動盪地區保護平民。</span></li>
-                <li><span class="en">It promotes human rights and coordinates humanitarian aid.</span><span class="zh">它推廣人權並統籌人道援助。</span></li>
-                <li><span class="en">Reforms are needed to overcome veto limits and funding gaps.</span><span class="zh">仍需改革以克服否決權限制與資金缺口。</span></li>
-                <li><span class="en">Regional partnerships under the UN banner share peacekeeping costs and training.</span><span class="zh">在聯合國框架下的區域合作可分擔維和成本與訓練。</span></li>
-                <li><span class="en">Youth advisory councils bring frontline perspectives into UN debates.</span><span class="zh">青年顧問委員會將第一線觀點帶入聯合國討論。</span></li>
-              </ul>
-            </div>
-          </article>
-        </div>
+      <article class="card expanded" data-category="Global Issues">
+        <span class="badge">Global Issues</span>
+        <h3>Role of the United Nations in Peace</h3>
+        <p class="summary">Reform and resources keep peacekeeping relevant.</p>
+        <div class="memory-tags"><span>Mediate • Protect • Reform</span></div>
+        <button class="card-toggle">Hide / Show Points</button>
+        <ul>
+          <li><span class="en">The UN offers diplomatic platforms to defuse conflicts.</span><span class="zh">聯合國提供外交平台化解衝突。</span></li>
+          <li><span class="en">Peacekeepers protect civilians in unstable regions.</span><span class="zh">維和部隊在動盪地區保護平民。</span></li>
+          <li><span class="en">It promotes human rights and coordinates humanitarian aid.</span><span class="zh">它推廣人權並統籌人道援助。</span></li>
+          <li><span class="en">Reforms are needed to overcome veto limits and funding gaps.</span><span class="zh">仍需改革以克服否決權限制與資金缺口。</span></li>
+        </ul>
       </article>
     </section>
   </main>
@@ -1488,91 +904,17 @@
   <script>
     const searchInput = document.getElementById('search');
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const topicCards = Array.from(document.querySelectorAll('.topic-card'));
-    const categoryFolders = Array.from(document.querySelectorAll('.category-folder'));
+    const cards = document.querySelectorAll('.card');
     const backToTop = document.getElementById('backToTop');
 
-    function setTopicOpen(topicCard, isOpen) {
-      const toggle = topicCard.querySelector('.topic-toggle');
-      const indicator = topicCard.querySelector('.topic-indicator');
-      topicCard.classList.toggle('open', isOpen);
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      indicator.textContent = isOpen ? '−' : '+';
-    }
-
-    document.querySelectorAll('.topic-toggle').forEach(toggle => {
-      const topicCard = toggle.closest('.topic-card');
-      toggle.addEventListener('click', () => {
-        const willOpen = !topicCard.classList.contains('open');
-        setTopicOpen(topicCard, willOpen);
-        if (willOpen) {
-          topicCard.dataset.manualOpen = 'true';
-        } else {
-          delete topicCard.dataset.manualOpen;
-        }
-      });
-    });
-
-    document.querySelectorAll('.folder-toggle').forEach(toggle => {
-      const folder = toggle.closest('.category-folder');
-      toggle.addEventListener('click', () => {
-        const isOpen = !folder.classList.contains('open');
-        folder.classList.toggle('open', isOpen);
-        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        folder.querySelector('.folder-indicator').textContent = isOpen ? '−' : '+';
-        folder.dataset.manualState = isOpen ? 'open' : 'closed';
-      });
-    });
-
     function applyFilters() {
-      const query = searchInput.value.trim().toLowerCase();
+      const query = searchInput.value.toLowerCase();
       const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-
-      topicCards.forEach(topicCard => {
-        const matchesFilter = activeFilter === 'all' || topicCard.dataset.category === activeFilter;
-        const matchesQuery = topicCard.innerText.toLowerCase().includes(query);
-        const shouldShow = matchesFilter && matchesQuery;
-        topicCard.style.display = shouldShow ? 'flex' : 'none';
-
-        if (!shouldShow) {
-          delete topicCard.dataset.searchOpen;
-          setTopicOpen(topicCard, false);
-        } else if (query) {
-          setTopicOpen(topicCard, true);
-          topicCard.dataset.searchOpen = 'true';
-        } else if (!query && topicCard.dataset.manualOpen === 'true') {
-          setTopicOpen(topicCard, true);
-        } else if (!query && topicCard.dataset.manualOpen !== 'true') {
-          setTopicOpen(topicCard, false);
-        }
+      cards.forEach(card => {
+        const matchesFilter = activeFilter === 'all' || card.dataset.category === activeFilter;
+        const matchesQuery = card.innerText.toLowerCase().includes(query);
+        card.style.display = matchesFilter && matchesQuery ? 'flex' : 'none';
       });
-
-      categoryFolders.forEach(folder => {
-        const hasVisible = Array.from(folder.querySelectorAll('.topic-card')).some(topic => topic.style.display !== 'none');
-        folder.style.display = hasVisible ? 'block' : 'none';
-        if (query && hasVisible) {
-          folder.classList.add('open');
-          const folderToggle = folder.querySelector('.folder-toggle');
-          folderToggle.setAttribute('aria-expanded', 'true');
-          folder.querySelector('.folder-indicator').textContent = '−';
-        } else if (!query) {
-          const manualState = folder.dataset.manualState || 'open';
-          const shouldBeOpen = manualState !== 'closed';
-          folder.classList.toggle('open', shouldBeOpen);
-          const folderToggle = folder.querySelector('.folder-toggle');
-          folderToggle.setAttribute('aria-expanded', shouldBeOpen ? 'true' : 'false');
-          folder.querySelector('.folder-indicator').textContent = shouldBeOpen ? '−' : '+';
-        }
-      });
-
-      if (!query) {
-        topicCards.forEach(topicCard => {
-          if (topicCard.dataset.searchOpen && topicCard.dataset.manualOpen !== 'true') {
-            setTopicOpen(topicCard, false);
-          }
-          delete topicCard.dataset.searchOpen;
-        });
-      }
     }
 
     searchInput.addEventListener('input', applyFilters);
@@ -1585,6 +927,13 @@
       });
     });
 
+    document.querySelectorAll('.card-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.card');
+        card.classList.toggle('expanded');
+      });
+    });
+
     window.addEventListener('scroll', () => {
       backToTop.style.display = window.scrollY > 400 ? 'block' : 'none';
     });
@@ -1592,8 +941,6 @@
     backToTop.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    applyFilters();
   </script>
 </body>
 </html>
