@@ -1,0 +1,1104 @@
+
+<!DOCTYPE html>
+<html lang="en-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hong Kong Study Compass</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card-bg: #ffffff;
+      --accent: #2563eb;
+      --accent-light: #dbeafe;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      padding: 2.5rem 1.25rem 1.5rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+      color: #0f172a;
+    }
+    header p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3rem;
+    }
+    .controls {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .controls h2 {
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .search-bar {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 2px solid var(--accent-light);
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: border 0.2s ease;
+    }
+    .search-bar:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .filter-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      background: var(--accent-light);
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .filter-btn.active {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.75rem;
+      border-radius: 999px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #0f172a;
+    }
+    .summary {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+    .memory-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .memory-tags span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #c2410c;
+    }
+    .card button {
+      border: none;
+      background: none;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+      align-self: flex-start;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s ease;
+    }
+    .card button:hover {
+      background: var(--accent-light);
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: none;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .card.expanded ul {
+      display: flex;
+    }
+    li {
+      background: #f8fafc;
+      border-radius: 0.85rem;
+      padding: 0.75rem 0.9rem;
+      border-left: 4px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .topic {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #0f172a;
+      display: block;
+      line-height: 1.5;
+    }
+    .detail {
+      font-size: 0.95rem;
+      color: #374151;
+      line-height: 1.6;
+      display: block;
+    }
+    .back-to-top {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      border: none;
+      border-radius: 999px;
+      padding: 0.9rem;
+      background: var(--accent);
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      display: none;
+    }
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      .controls {
+        padding: 1rem;
+      }
+      .card {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hong Kong Study Compass</h1>
+    <p>
+      Explore key debate topics across education, technology, environment, lifestyle, culture, careers, ethics, leisure, and global issues. Use the search bar or category chips, expand each card, and remember every point with built-in bilingual cues.
+    </p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <h2>Navigate the Ideas</h2>
+      <input id="search" class="search-bar" type="text" placeholder="Search topics, keywords, or ideas..." />
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="Education & Learning">Education & Learning</button>
+        <button class="filter-btn" data-filter="Technology & Social Media">Technology & Social Media</button>
+        <button class="filter-btn" data-filter="Environment & Sustainability">Environment & Sustainability</button>
+        <button class="filter-btn" data-filter="Health & Lifestyle">Health & Lifestyle</button>
+        <button class="filter-btn" data-filter="Hong Kong Society & Culture">HK Society & Culture</button>
+        <button class="filter-btn" data-filter="Work & Career">Work & Career</button>
+        <button class="filter-btn" data-filter="Ethics & Social Issues">Ethics & Social Issues</button>
+        <button class="filter-btn" data-filter="Leisure & Entertainment">Leisure & Entertainment</button>
+        <button class="filter-btn" data-filter="Global Issues">Global Issues</button>
+      </div>
+    </section>
+
+    <section class="cards-grid" id="cards">
+      <!-- Education & Learning -->
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Online Learning vs Face-to-Face Classes</h3>
+        <p class="summary">Compare flexibility and interaction to decide the best mix.</p>
+        <div class="memory-tags"><span>Flex ≠ Feedback</span><span>Hybrid Power</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Online learning offers anytime access. Flexible slots fit athletes and part-time jobs. Commuters reclaim crowded transit hours. Less rushing lowers chronic stress.</span><span class="zh">網上學習提供隨時接入。彈性時段配合運動員和兼職。通勤者收回擁擠車程。減少奔波可降低長期壓力。</span></li>
+          <li><span class="en">Recorded lessons pause for dictionaries. Students replay tough formulas until they click. Quiet learners avoid interrupting teachers repeatedly. Repetition cements memory before exams.</span><span class="zh">錄影課堂可暫停以查字典。學生能重播困難公式直到弄懂。內向學習者無需一再打斷老師。重複觀看在考前鞏固記憶。</span></li>
+          <li><span class="en">Self-paced dashboards train planning muscles. Learners prioritise weak chapters and stretch goals. Without nearby classmates, procrastination can creep in. Mentors must check progress online.</span><span class="zh">自訂進度平台鍛鍊規劃能力。學生可先處理弱項並設定進階目標。缺少身邊同學時容易拖延。導師須在線檢視進度。</span></li>
+          <li><span class="en">Face-to-face lessons deliver instant feedback. Teachers read puzzled expressions and tone. Group tasks create spontaneous debate energy. Shared discipline keeps everyone attentive.</span><span class="zh">面授課堂提供即時回饋。老師能閱讀疑惑表情與語氣。小組任務激發即興討論能量。共同紀律令全班保持專注。</span></li>
+          <li><span class="en">A hybrid timetable blends strengths. Online modules support revision and sick days. Classroom labs handle experiments and teamwork cues. Balance ensures resilience during disruptions.</span><span class="zh">混合時間表結合優點。網課模組支援複習及病假。課室實驗處理操作與合作默契。平衡模式在突發情況下最為穩健。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Should Students Use AI for Schoolwork?</h3>
+        <p class="summary">Harness AI responsibly for brainstorming without losing originality.</p>
+        <div class="memory-tags"><span>AI = Assistant</span><span>Cite & Create</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">AI chatbots explain tough ideas in plain language. Students can request multiple analogies until one resonates. Fast clarification prevents frustration from piling up. Class time is then used for deeper dialogue.</span><span class="zh">AI 聊天機械人能用淺白語言解釋難題。學生可要求多個比喻直到明白。快速釐清能避免挫折累積。這樣課堂時間即可用於深入對話。</span></li>
+          <li><span class="en">AI outlines help organise essays and projects. Suggested headings remind learners to cover counter-arguments. Draft structures also reveal logical gaps early. Planning discipline grows with each guided prompt.</span><span class="zh">AI 大綱有助整理文章與專題。建議的段落提示學生涵蓋反方論點。草稿架構能及早揭露邏輯空隙。每次指引都培養規劃自律。</span></li>
+          <li><span class="en">Over-reliance risks shallow thinking. Copying AI text can dull personal voice and judgement. Students may skip reading source materials altogether. Teachers must emphasise critique over convenience.</span><span class="zh">過度依賴會帶來淺層思考。直接複製 AI 文字會削弱個人語氣與判斷。學生甚至可能完全不讀原始資料。老師須強調批判勝於便利。</span></li>
+          <li><span class="en">Clear citation rules protect academic integrity. Learners should label AI-assisted lines just like book quotes. Transparency lets markers assess human contribution. Honesty also trains ethical tech habits.</span><span class="zh">清晰的引用規則能保護學術誠信。學生應像引用書籍那樣標示 AI 協助語句。透明度讓批改者判斷人類貢獻。誠實亦能養成合乎道德的科技習慣。</span></li>
+          <li><span class="en">Schools need digital literacy coaching. Teachers can model effective prompts and fact-checking steps. Guardrails like word limits keep AI as a helper. Guided practice builds confidence without shortcuts.</span><span class="zh">學校需要推行數碼素養指導。老師可示範有效提示語與查證流程。字數限制等護欄能讓 AI 只作助手。循序練習可建立信心而不走捷徑。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Is Homework Still Valuable?</h3>
+        <p class="summary">Balance reinforcement benefits with student wellbeing.</p>
+        <div class="memory-tags"><span>Practice Makes Ready</span><span>Less but Better</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Homework extends classroom practice into real homes. Revisiting lessons within 24 hours strengthens neural links. Students notice gaps they missed during fast lectures. Feedback loops become more precise.</span><span class="zh">功課把課堂練習延伸到家中。於 24 小時內重溫可強化神經連結。學生會發現快節奏講解中漏掉的盲點。回饋循環因此更精準。</span></li>
+          <li><span class="en">Regular drills sharpen exam stamina. Maths problem sets train DSE candidates to decode questions quickly. Writing assignments stretch vocabulary under timed conditions. Familiarity turns anxiety into routine.</span><span class="zh">定期操練能磨練考試耐力。數學題集訓練 DSE 考生迅速拆題。寫作作業讓詞彙在限時下延展。熟悉感可把焦慮化為日常。</span></li>
+          <li><span class="en">Independent homework builds responsibility. Students schedule tasks around sports, chores, and rest. Meeting deadlines teaches prioritisation skills employers value. Self-management habits spill into adulthood.</span><span class="zh">獨立完成功課能建立責任感。學生需在運動、家務與休息之間排程。準時繳交培養職場所需的優先順序能力。自我管理習慣會延伸到成年。</span></li>
+          <li><span class="en">Excessive loads create burnout. Hong Kong teens often sleep less to finish piles of worksheets. Fatigue reduces memory retention the next day. Families feel constant tension at dinner tables.</span><span class="zh">過量作業會造成倦怠。香港青少年常為完成練習而減少睡眠。疲勞會降低翌日的記憶保持。家庭晚餐也因此充滿緊張。</span></li>
+          <li><span class="en">Quality beats quantity. Schools can swap repetitive pages for inquiry projects or reflection logs. Targeted assignments align directly with learning goals. Students then see clear purpose in every task.</span><span class="zh">品質比數量重要。學校可用探究專題或反思日誌取代重複紙本。精準任務能與學習目標直接對應。學生因此能看見每項作業的明確意義。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Extracurriculars vs Academic Results</h3>
+        <p class="summary">Blend grades and growth to stand out.</p>
+        <div class="memory-tags"><span>Grades + Grit</span><span>Whole Person</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Clubs, sports, and arts expand soft skills. Students practise leadership, negotiation, and empathy outside textbooks. Performing before audiences builds confidence quickly. These traits later impress interviewers.</span><span class="zh">學會、體育與藝術能擴展軟技能。學生在課本外練習領導、協商與同理。於觀眾前演出可迅速建立自信。這些特質往後能打動面試官。</span></li>
+          <li><span class="en">Strong grades still gatekeep pathways. University admissions and scholarships examine transcripts first. Professional licences require minimum subject scores. Academic mastery signals readiness for advanced content.</span><span class="zh">優秀成績仍然決定道路。大學錄取與獎學金首先審視成績表。專業牌照亦要求科目達標。學術掌握代表已準備好應對進階內容。</span></li>
+          <li><span class="en">Outstanding extracurricular records differentiate similar GPAs. Regional awards or leadership roles show initiative. Portfolios reveal creative risk-taking beyond exams. Committees visualise the applicant’s future impact.</span><span class="zh">出眾的課外履歷能區分相近的 GPA。地區獎項或領袖職位展現主動性。作品集呈現超越考試的創意冒險。甄選委員因此能想像申請者的未來影響力。</span></li>
+          <li><span class="en">Balanced scheduling prevents burnout. Students can block study windows before rehearsals. Coaches and teachers should coordinate busy seasons. Rest days keep both academics and activities sustainable.</span><span class="zh">平衡排程能避免倦怠。學生可在綵排前預留讀書時段。教練與老師需要協調旺季時間。休息日能讓學業與活動同樣可持續。</span></li>
+          <li><span class="en">Reflection links activities to long-term goals. Journaling after events clarifies lessons learnt. Connecting club roles to career interests sharpens motivation. Colleges appreciate applicants who articulate this growth.</span><span class="zh">反思能把活動連結至長遠目標。活動後寫日誌可釐清所得。把社團角色連繫至職涯興趣能提振動機。大學欣賞能表達此成長的申請人。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Reducing Study Pressure</h3>
+        <p class="summary">Design school systems that protect mental health.</p>
+        <div class="memory-tags"><span>Less Test, More Rest</span><span>Support Net</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Reducing redundant homework frees evenings. Schools can consolidate quizzes into themed projects. Longer timelines remove last-minute cram marathons. Students regain predictable rest hours.</span><span class="zh">減少重複功課可釋放晚上。學校能把小測整合成主題專題。較長期限能避免臨時死背。學生可重新擁有可預期的休息時間。</span></li>
+          <li><span class="en">Mindfulness and counselling normalise mental care. Short breathing practices calm exam jitters. On-campus counsellors offer confidential listening. Early support stops anxiety from spiralling.</span><span class="zh">靜觀與輔導能讓心理照顧常態化。簡短呼吸練習能緩和考試緊張。校內輔導員提供保密傾聽。及早支援可阻止焦慮失控。</span></li>
+          <li><span class="en">Cultural expectations must evolve. Parents can praise effort, kindness, and resilience alongside grades. Media campaigns highlight diverse success stories. Society then values wellness as much as trophies.</span><span class="zh">文化期望必須更新。家長可在分數之外讚賞努力、善良與韌性。媒體活動能突出多元成功故事。社會因而把健康與獎盃同等看待。</span></li>
+          <li><span class="en">Daily exercise and hobbies reset brains. School teams, dance clubs, and art jams release stress hormones. Physical movement improves sleep quality. Creative outlets remind students they are more than scores.</span><span class="zh">每日運動與興趣可重啟大腦。校隊、舞蹈社與藝術 jam 能釋放壓力荷爾蒙。身體活動能提升睡眠品質。創意出口提醒學生自己不只是一串分數。</span></li>
+          <li><span class="en">Government support expands access. Funding for counsellors and youth centres reduces waiting lists. Public campaigns can advertise helplines and rest spaces. Coordinated policy makes wellbeing systemic.</span><span class="zh">政府支援能擴大服務。資助輔導員與青年中心可縮短輪候。公共宣傳可推廣熱線與休息空間。協調政策能把福祉變成制度。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Community Service as a Requirement?</h3>
+        <p class="summary">Service learning can shape civic-minded graduates.</p>
+        <div class="memory-tags"><span>Serve to Learn</span><span>Flex Options</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Mandatory service exposes students to community needs. Meeting elders, refugees, or children builds empathy quickly. Responsibility grows when commitments affect real people. Civic identity no longer stays theoretical.</span><span class="zh">必修服務讓學生看見社區需要。接觸長者、難民或兒童能迅速培養同理心。當承諾影響真實人物時責任感會增長。公民身份不再只是理論。</span></li>
+          <li><span class="en">Hands-on tasks develop practical skills. Planning donation drives sharpens logistics. Guiding primary pupils strengthens communication clarity. These abilities transfer directly to future workplaces.</span><span class="zh">親身任務能發展實務技能。籌劃捐贈活動可磨練物流安排。帶領小學生能提升溝通清晰度。這些能力直接延伸至未來職場。</span></li>
+          <li><span class="en">Service hours benefit portfolios and society simultaneously. NGOs receive manpower while students document measurable outcomes. Reference letters highlight reliability over long periods. Universities value evidence of contribution.</span><span class="zh">服務時數同時造福履歷與社會。非政府組織獲得人手，學生則紀錄可量度成果。推薦信能強調長期可靠度。大學重視具體貢獻的證據。</span></li>
+          <li><span class="en">Flexible options prevent burnout. Schools can offer arts therapy, tech tutoring, or environmental clean-ups. Students choose causes matching talents and schedules. Autonomy keeps motivation authentic.</span><span class="zh">彈性選項能防止倦怠。學校可提供藝術治療、科技補習或環境清潔。學生選擇與才華及時間表相符的議題。自主性讓動機保持真誠。</span></li>
+          <li><span class="en">Structured reflection turns hours into insight. Journals or debrief circles capture lessons learned. Discussing failures teaches humility and problem-solving. Service becomes a sustained habit rather than a checkbox.</span><span class="zh">有結構的反思能把時數化為洞見。日誌或檢討圈可記錄學到的事。討論挫敗可教會謙遜與解難能力。服務因此成為長期習慣而非打卡。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Education & Learning">
+        <span class="badge">Education & Learning</span>
+        <h3>Is Memorization Still Needed?</h3>
+        <p class="summary">Combine memory with modern thinking skills.</p>
+        <div class="memory-tags"><span>Mem + Mind</span><span>Recall & Apply</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Memorising vocabulary, formulas, and dates creates scaffolding. With facts ready, students can analyse links faster. Background knowledge also boosts confidence during discussions. Understanding grows from a stocked mental library.</span><span class="zh">記熟詞彙、公式與年代能建立支架。資料隨時可用時，學生能更快分析關聯。充分背景也能在討論時提升信心。理解力來自充足的心智資料庫。</span></li>
+          <li><span class="en">Timed exams still demand instant recall. Chinese listening tests move too fast for constant dictionary checks. Science labs expect quick conversion between units. Speedy retrieval saves crucial minutes.</span><span class="zh">限時考試仍要求即時提取。中文聆聽測驗節奏太快，無法邊查字典。科學實驗亦需迅速換算單位。快速回想能節省關鍵分鐘。</span></li>
+          <li><span class="en">Digital tools reduce blind memorising but cannot replace it. Calculators and apps may fail during power outages. If students only rely on devices, critical thinking stalls when connectivity drops. Human knowledge remains the safety net.</span><span class="zh">數碼工具讓死記變少但無法完全取代。計算機與應用程式在停電時可能失靈。若學生只依賴裝置，斷線時批判思考會停擺。人腦知識仍是安全網。</span></li>
+          <li><span class="en">Balanced instruction links memory to application. Teachers can pair flashcards with mini debates or experiments. Students then see how facts drive real arguments. Synthesis prevents memorisation from feeling pointless.</span><span class="zh">平衡教學可把記憶與應用連結。老師能把字卡與小辯論或實驗結合。學生於是看見事實如何支撐真實論點。綜合過程能避免記憶變得無意義。</span></li>
+          <li><span class="en">Effective techniques make memorisation humane. Spaced repetition schedules reviews before forgetting peaks. Mnemonics or stories transform dry lists into vivid images. Healthier strategies reduce cramming stress.</span><span class="zh">有效技巧能讓記憶更人性化。間隔重溫於遺忘高峰前安排複習。記憶法或故事能把枯燥清單轉成鮮明畫面。較健康的方法可減輕臨時抱佛腳的壓力。</span></li>
+        </ul>
+      </article>
+
+      <!-- Technology & Social Media -->
+      <article class="card" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Social Media & Teen Mental Health</h3>
+        <p class="summary">Leverage support while guarding against comparison.</p>
+        <div class="memory-tags"><span>Connect Carefully</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Social media keeps teens connected beyond classroom walls. Group chats sustain friendships when schedules conflict. Support communities offer empathy for niche interests or struggles. Feeling seen online can buffer loneliness.</span><span class="zh">社交媒體讓青少年在課室外仍保持聯繫。群組聊天能在行程衝突時維繫友誼。支援社群為小眾興趣或困境提供同理。被線上看見能緩衝孤單感。</span></li>
+          <li><span class="en">Platforms provide spaces for creativity and identity. Teens share art, music, or bilingual posts to explore voice. Positive feedback can motivate further learning. Digital portfolios later impress universities.</span><span class="zh">平台提供創作與身份探索的空間。青少年分享藝術、音樂或雙語貼文以尋找自我聲音。正面回饋能激發持續學習。數碼作品集未來也能打動大學。</span></li>
+          <li><span class="en">Constant comparison strains self-esteem. Filtered highlight reels hide the effort and editing behind success. Viewers may assume everyone else lives perfectly. Unrealistic benchmarks can trigger anxiety or disordered eating.</span><span class="zh">不斷比較會拉低自尊。經過濾鏡的精彩片段隱藏了成功背後的努力與修圖。觀看者可能以為他人生活全然完美。不實標準容易引發焦慮或飲食失調。</span></li>
+          <li><span class="en">Cyberbullying travels 24/7. Hurtful comments and anonymous rumours can viralise overnight. Algorithms may keep surfacing similar negativity, deepening harm. Victims often hesitate to tell adults.</span><span class="zh">網絡霸凌全天候蔓延。惡意留言與匿名謠言可在一夜之間瘋傳。演算法可能不斷推送相似負面內容，加深傷害。受害者往往不敢向成年人求助。</span></li>
+          <li><span class="en">Digital literacy and boundaries offer balance. Schools can teach fact-checking, empathy, and reporting tools. Families can set device-free meals and bedtime curfews. Healthy rituals remind teens to log off.</span><span class="zh">數碼素養與界線能帶來平衡。學校可教授查證、同理與檢舉工具。家庭能設定無裝置的用餐時間與睡前宵禁。健康儀式可提醒青少年適時離線。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Smartphones: Connected or Isolated?</h3>
+        <p class="summary">Keep instant contact without losing present moments.</p>
+        <div class="memory-tags"><span>Message Mindfully</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Smartphones let families share updates instantly. Video calls bridge time zones for migrant workers and students. Photos and voice notes preserve daily intimacy. Distance feels less daunting.</span><span class="zh">智能手機讓家人即時分享近況。視像通話能連接外地工作者與留學生。相片與語音訊息可保存日常親密感。距離因此不再那麼可怕。</span></li>
+          <li><span class="en">Group chats streamline logistics. Hongkongers coordinate tuition, transport, and lunch through quick texts. Calendar apps prevent double-booking across packed schedules. Convenience keeps communities efficient.</span><span class="zh">群聊能簡化後勤安排。港人透過訊息協調補習、交通與午餐。行事曆應用程式可避免滿檔日程的撞期。便利性令社群保持高效率。</span></li>
+          <li><span class="en">Phubbing can damage relationships. Checking feeds during meals signals disinterest. Friends may feel invisible even while sitting together. Emotional distance grows despite physical presence.</span><span class="zh">低頭滑手機會破壞人際關係。用餐時刷動態象徵缺乏關心。即使肩並肩，朋友仍可能感到被忽視。即使面對面也會拉開情感距離。</span></li>
+          <li><span class="en">Constant notifications fragment focus. Students switch between apps and assignments every few minutes. Cognitive overload reduces memory retention. Sleep suffers when alerts light up at midnight.</span><span class="zh">無盡通知會切碎專注。學生每幾分鐘就在應用程式與功課間切換。認知超載會降低記憶保持。半夜響起的提示亦會破壞睡眠。</span></li>
+          <li><span class="en">Mindful habits restore balance. Users can disable non-essential alerts and schedule phone-free blocks. Friends can agree on table rules before gatherings. Intentional use preserves both connection and presence.</span><span class="zh">正念習慣可重建平衡。用戶可關閉非必要通知並安排無手機時段。朋友聚會前可先訂桌上規則。有意識的使用能同時保留連結與在場感。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>AI in Daily Life</h3>
+        <p class="summary">Balance convenience with privacy and job concerns.</p>
+        <div class="memory-tags"><span>Smart & Safe</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">AI assistants streamline everyday tasks. Apps suggest fastest routes during typhoons or protests. Smart reminders pay bills before deadlines. Time saved can be reinvested in study or rest.</span><span class="zh">AI 助理能簡化日常工作。應用程式會在颱風或遊行時建議最快路線。智能提醒會在期限前繳費。節省的時間可再投入學習或休息。</span></li>
+          <li><span class="en">Healthcare AI spots illnesses earlier. Image recognition flags suspicious cells long before symptoms show. Doctors combine alerts with human expertise for accurate diagnoses. Patients gain precious treatment windows.</span><span class="zh">醫療 AI 能更早發現疾病。影像辨識會在症狀出現前標示可疑細胞。醫生將警示與專業結合以達成準確診斷。病人因此多出寶貴治療時間。</span></li>
+          <li><span class="en">Personalised recommendations delight users. Music, shopping, and language apps tailor suggestions to micro-preferences. Relevant content reduces search fatigue. People feel understood by their devices.</span><span class="zh">個人化建議能取悅用戶。音樂、購物與語言應用會依據微小偏好推介。合適內容能減少搜尋疲勞。人們彷彿被裝置理解。</span></li>
+          <li><span class="en">Massive data collection raises privacy alarms. Voice assistants may store more audio than expected. Location trails can reveal school routines or political habits. Citizens need clearer consent controls.</span><span class="zh">龐大的資料收集令人擔心私隱。語音助理可能保存超出預期的錄音。位置軌跡能透露上學路線或政治習慣。市民需要更清晰的同意控權。</span></li>
+          <li><span class="en">Automation reshapes labour markets. Routine clerical roles face replacement, yet new jobs appear in AI oversight. Governments must update training subsidies and labour laws. Fair regulation keeps progress inclusive.</span><span class="zh">自動化正在重塑勞動市場。例行文職可能被取代，但 AI 監督等新職位冒出。政府必須更新培訓資助與勞工法例。公平監管能讓進步具包容性。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Protecting Personal Privacy Online</h3>
+        <p class="summary">Adopt everyday habits to stay secure.</p>
+        <div class="memory-tags"><span>Lock, Limit, Look</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Unique passwords and two-factor codes stop simple hacks. Using passphrases with symbols slows brute-force attacks. Authenticator apps block intruders even if one device leaks. Layered defence buys reaction time.</span><span class="zh">獨特密碼與雙重驗證可阻止簡單入侵。含符號的通行語能減慢暴力破解。即使裝置外洩，驗證器應用仍能阻擋陌生人。多層防線能爭取應變時間。</span></li>
+          <li><span class="en">Privacy settings control audience reach. Limiting posts to trusted contacts reduces data scraping. Reviewing app permissions prevents unnecessary camera or mic access. Regular audits keep profiles lean.</span><span class="zh">私隱設定能控制受眾範圍。僅向信任對象開放貼文可減少資料被爬取。檢視應用權限可避免不必要的鏡頭或麥克風存取。定期檢查能讓個人檔案保持精簡。</span></li>
+          <li><span class="en">Sharing locations and photos demands caution. Vacation posts can signal empty homes to burglars. Geotags may expose frequented schools or workplaces. Delayed uploads protect both safety and privacy.</span><span class="zh">分享位置與相片需格外小心。度假貼文可能告知賊人家中無人。地理標籤會暴露常去的學校或工作地點。延遲上傳能同時保護安全與私隱。</span></li>
+          <li><span class="en">Monitoring breaches helps users act quickly. Email alert services report when accounts appear in leaked databases. Updating credentials immediately stops cascading fraud. Vigilance keeps digital identities intact.</span><span class="zh">監察資料外洩能讓用戶迅速應對。電郵警示服務會回報帳戶是否出現在外洩清單。立即更新憑證可阻止連鎖詐騙。保持警覺能維護數碼身份。</span></li>
+          <li><span class="en">Public Wi-Fi requires extra safeguards. Virtual private networks encrypt traffic on café or airport networks. Avoiding online banking on shared connections reduces risk. Simple habits prevent expensive headaches.</span><span class="zh">公共 Wi-Fi 需要額外防護。虛擬私人網絡能在咖啡店或機場加密流量。避免在共享連線上處理網銀可降低風險。簡單習慣即可避免高昂麻煩。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Is Technology Making Us Lazier?</h3>
+        <p class="summary">Let automation unlock creativity, not complacency.</p>
+        <div class="memory-tags"><span>Convenience vs Effort</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Automation removes repetitive chores. Vacuum robots, meal apps, and digital forms free evenings. Saved minutes can support extra reading or volunteering. Convenience is valuable when used intentionally.</span><span class="zh">自動化能消除重複瑣事。吸塵機器人、外賣應用與電子表格釋放晚上時間。節省的分鐘能用於閱讀或義工。只要有意識地運用，便利就是資產。</span></li>
+          <li><span class="en">Freed capacity unlocks creativity. When basic tasks shrink, people can prototype businesses or art. Students may spend time on passion projects or competitions. Technology can therefore elevate ambition.</span><span class="zh">騰出的精力能釋放創意。基礎工作減少後，人們可試做生意或藝術。學生也能花時間在興趣專案或比賽。科技因此可以提升抱負。</span></li>
+          <li><span class="en">Physical inactivity remains a risk. Delivery apps tempt residents to skip walks. Long gaming or streaming sessions reduce cardiovascular health. Intentional exercise must counterbalance sedentary hours.</span><span class="zh">身體不動仍是一大風險。送餐應用會讓居民放棄步行。長時間遊戲或串流會削弱心肺健康。刻意運動需抵銷久坐時數。</span></li>
+          <li><span class="en">Problem-solving grit can decline. Smart suggestions sometimes provide answers before effort begins. Without wrestling with confusion, resilience muscles shrink. Educators should still assign challenging puzzles.</span><span class="zh">解難毅力可能下滑。智能建議常在動手前就給出答案。若沒有與困惑搏鬥，韌性肌肉會萎縮。教育者仍需安排具挑戰性的題目。</span></li>
+          <li><span class="en">Self-discipline keeps tech as a helper. Setting goals and screen limits reminds users to stay active. Tracking productive versus passive time exposes habits. Reflection prevents convenience from becoming dependence.</span><span class="zh">自律能讓科技維持助手角色。訂立目標與螢幕限制能提醒自己保持主動。記錄主動與被動時間能揭露習慣。反思可防止便利變成依賴。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Technology & Social Media">
+        <span class="badge">Technology & Social Media</span>
+        <h3>Technology & Environmental Conservation</h3>
+        <p class="summary">Use data and devices to protect nature.</p>
+        <div class="memory-tags"><span>Track & Restore</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Satellites and IoT sensors monitor ecosystems in real time. Forest loss, coral bleaching, and illegal fishing surface as instant alerts. Scientists respond before damage spreads. Data replaces guesswork.</span><span class="zh">衛星與物聯感應器能即時監測生態。森林流失、珊瑚白化與非法捕魚會即刻警示。科學家能在破壞擴散前回應。數據取代了猜測。</span></li>
+          <li><span class="en">Citizen apps turn phones into green tools. Residents log heat readings, litter hotspots, or endangered species sightings. Crowdsourced info guides city clean-ups and research. Participation deepens environmental ownership.</span><span class="zh">市民應用把手機變成環保工具。居民可記錄熱度、垃圾黑點或瀕危物種。群眾資料可指引城市清潔與研究。參與感能加深環境責任。</span></li>
+          <li><span class="en">Smart energy systems cut waste in buildings. Sensors dim lights when rooms empty and adjust AC by zone. Utility bills drop while comfort stays stable. Savings can fund further retrofits.</span><span class="zh">智慧能源系統能減少建築浪費。感應會在房間空置時調暗燈並分區調節冷氣。電費降低但舒適度維持。節省下來的資金可再投資改造。</span></li>
+          <li><span class="en">Drones support reforestation and clean-ups. Seed-dropping fleets cover steep hills faster than humans. Beach-cleaning drones map plastic clusters for crews. Automation speeds ecological recovery.</span><span class="zh">無人機能支援再造林與清理。撒種隊伍能比人類更快覆蓋陡坡。沙灘清潔無人機會為隊伍標出塑膠集中點。自動化能加速生態復原。</span></li>
+          <li><span class="en">Open data sharing strengthens policy. Governments, NGOs, and startups can pool dashboards to spot trends. Transparent metrics justify funding for protected areas. Collaboration keeps conservation accountable.</span><span class="zh">開放數據共享能強化政策。政府、非政府組織與初創可整合儀表板以掌握趨勢。透明指標能為保護區資金提供理據。協作能使保育更具問責。</span></li>
+        </ul>
+      </article>
+
+      <!-- Environment & Sustainability -->
+      <article class="card" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Individual Actions Against Climate Change</h3>
+        <p class="summary">Small habits add up to massive impact.</p>
+        <div class="memory-tags"><span>Eat • Move • Save</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Reducing meat and food waste lowers household emissions. Choosing smaller meat portions or plant-based meals cuts methane-heavy demand. Planning grocery lists stops forgotten produce from spoiling. Less waste means less landfill gas.</span><span class="zh">減少食肉與食物浪費可降低家庭排放。選擇小份肉類或植物餐能減低高甲烷需求。預先列出購物清單可避免食材腐壞。減少垃圾就能減少堆填氣體。</span></li>
+          <li><span class="en">Public transport, cycling, and walking shrink personal footprints. Hong Kong’s dense network lets riders swap solo cars for MTR rides. Cycling short distances keeps streets quieter. Active travel also boosts fitness.</span><span class="zh">公共交通、單車與步行能縮小個人足跡。香港密集的交通網讓人以港鐵取代私家車。短程踩單車能讓街道更寧靜。主動式出行亦能提升體能。</span></li>
+          <li><span class="en">Home energy habits matter. Switching off idle appliances and choosing energy labels A or above reduce electricity demand. Fans plus open windows can replace nonstop air-con in spring. Lower bills reward these routines.</span><span class="zh">家居能源習慣同樣重要。關掉閒置電器並選擇 A 級以上產品可減電力需求。春季以風扇配合開窗可代替不停開冷氣。較低的電費就是最佳回報。</span></li>
+          <li><span class="en">Conscious consumer choices push markets. Supporting refill shops and sustainable brands tells retailers to rethink packaging. Buying durable goods instead of fast fashion slows resource extraction. Wallet votes create cultural shifts.</span><span class="zh">有意識的消費選擇能推動市場。支持補充店與永續品牌會促使零售商重新思考包裝。購買耐用商品而非快時尚能放慢資源開採。金錢投票能帶來文化轉變。</span></li>
+          <li><span class="en">Grassroots advocacy amplifies impact. Signing petitions, joining climate marches, or writing legislators keeps pressure on policymakers. Community workshops share practical skills with neighbours. Collective voices scale up personal changes.</span><span class="zh">草根倡議能放大影響。簽署請願、參與氣候遊行或致信議員能持續向決策者施壓。社區工作坊可與鄰里分享實用技巧。集體聲音能擴大個人改變。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Should Hong Kong Ban Single-Use Plastics?</h3>
+        <p class="summary">Consider oceans, costs, and culture shifts.</p>
+        <div class="memory-tags"><span>Ban to Reset</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">A ban would immediately cut marine litter. Fewer takeaway boxes and straws would reach Victoria Harbour. Cleaner coastlines protect fisheries and tourism. Sea animals avoid choking hazards.</span><span class="zh">禁用政策能即時減少海洋垃圾。更少的外賣盒與吸管會流入維港。更乾淨的海岸能保護漁業與旅遊。海洋生物也能避免被垃圾噎死。</span></li>
+          <li><span class="en">Regulations nudge residents toward reusables. When plastic utensils cost money, people remember to pack their own kits. Offices can install washing stations to support staff. Habits shift after repeated practice.</span><span class="zh">法規能促使市民改用可重用用品。當膠餐具需要付費時，人們會記得自備餐具。辦公室可設洗滌站支援員工。重複實踐後習慣就會轉變。</span></li>
+          <li><span class="en">Businesses face transition expenses. Cafés must source compostable containers or invest in dishwashers. Smaller shops worry about storage space for reusables. Government grants can cushion these costs.</span><span class="zh">企業必須承擔過渡成本。咖啡店需採購可堆肥容器或投資洗碗設備。小商店也擔心可重用物品的儲存空間。政府資助可緩衝這些開支。</span></li>
+          <li><span class="en">Education campaigns smooth adoption. Tutorials can show how to clean silicone cups or fold fabric wraps. Highlighting local success stories builds trust. Citizens comply more when they understand the process.</span><span class="zh">教育活動能令過渡更順利。教學影片可示範如何清洗矽膠杯或折疊布包。強調本地成功案例能建立信任。理解流程後，市民更願意配合。</span></li>
+          <li><span class="en">Enforcement keeps policies credible. Clear penalties for non-compliance prevent loopholes. Inspectors can focus on high-waste districts first. Consistency signals that sustainability goals matter.</span><span class="zh">執法能維持政策公信力。違規罰則清晰可避免鑽漏洞。巡查人員可先集中於廢物量高的地區。一致性傳遞出可持續目標的重要性。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Protecting Endangered Species</h3>
+        <p class="summary">Biodiversity is public health insurance.</p>
+        <div class="memory-tags"><span>Balance Biodiversity</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Each species anchors ecosystem balance. Removing one predator or pollinator disrupts entire food webs. Water quality, crop yields, and disease control all depend on biodiversity. Protection keeps these systems resilient.</span><span class="zh">每個物種都是生態平衡的支柱。少了一種捕食者或授粉者就會破壞整個食物網。水質、農作物產量與疾病控制都依賴生物多樣性。保護能讓系統保持韌性。</span></li>
+          <li><span class="en">Biodiversity fuels medical discoveries. Plants, fungi, and marine life provide compounds for antibiotics and cancer drugs. Extinction erases potential cures before scientists even test them. Conserving habitats safeguards future treatments.</span><span class="zh">生物多樣性孕育醫藥發現。植物、真菌與海洋生物提供抗生素與抗癌藥的化合物。滅絕會在科學家測試前就抹殺潛在療法。保護棲息地才能守住未來藥物。</span></li>
+          <li><span class="en">Many species carry cultural meaning. Pink dolphins, incense trees, or horseshoe crabs symbolise Hong Kong heritage. Losing them would erase stories, festivals, and crafts. Conservation honours both nature and identity.</span><span class="zh">許多物種富含文化意義。中華白海豚、沉香樹或鱟都是香港的象徵。失去牠們等同抹去故事、節慶與工藝。保育同時尊重自然與身份。</span></li>
+          <li><span class="en">Ecotourism funds protection. Visitors pay for guided hikes, wildlife views, and community homestays. Revenue supports rangers and scientific monitoring. Sustainable tourism turns conservation into livelihoods.</span><span class="zh">生態旅遊可為保護工作提供資金。遊客會付費參加導賞、觀賞野生動物與社區民宿。收入可支援護林員與科學監測。永續旅遊能把保育轉化為生計。</span></li>
+          <li><span class="en">Education empowers local guardians. Citizen science projects teach residents to record sightings. Youth programmes inspire future conservationists. Community pride keeps poaching and habitat destruction in check.</span><span class="zh">教育能賦權本地守護者。公民科學計畫會教居民記錄觀察。青年課程能啟發下一代保育人士。社區自豪感可抑制偷獵與棲地破壞。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Are Electric Vehicles the Solution?</h3>
+        <p class="summary">EVs shine with renewables and transit upgrades.</p>
+        <div class="memory-tags"><span>Charge with Change</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">EVs remove tailpipe emissions from city streets. Air quality improves especially along congested corridors. Quieter motors also reduce noise pollution for apartment blocks. Residents enjoy healthier urban environments.</span><span class="zh">電動車能消除街道上的尾氣。擁擠走廊的空氣質素因此改善。更靜的馬達也能減少住宅的噪音污染。居民能享受更健康的城市環境。</span></li>
+          <li><span class="en">Battery technology keeps advancing. Longer ranges and faster charging ease driver anxiety. Falling prices make EVs accessible to middle-class families. Innovation attracts new engineering jobs.</span><span class="zh">電池技術持續進步。更長續航與更快充電能減少司機焦慮。價格下滑讓中產家庭也能負擔。創新亦能帶動新的工程職位。</span></li>
+          <li><span class="en">Electricity sources still matter. Charging from coal-heavy grids shifts pollution upstream rather than eliminating it. Mining battery materials can scar ecosystems if unmanaged. True sustainability requires clean energy inputs.</span><span class="zh">電力來源仍然關鍵。若從燃煤電網充電，只是把污染移到上游。若缺乏管理，開採電池原料亦會傷害生態。真正的永續需要潔淨能源供應。</span></li>
+          <li><span class="en">Infrastructure must scale with adoption. Dense housing estates need shared chargers in car parks. Fast-charging corridors support taxi and delivery fleets. Policy coordination prevents bottlenecks.</span><span class="zh">基礎設施必須與普及同步擴張。密集屋苑需要在停車場設共享充電位。快速充電走廊可支援的士與配送車隊。政策協調可避免瓶頸。</span></li>
+          <li><span class="en">EVs work best alongside transit upgrades. When buses and trains remain convenient, car trips drop altogether. Charging depots can also power electric minibuses or ferries. Integrated planning multiplies climate benefits.</span><span class="zh">電動車必須配合公共交通升級才能發揮最大效益。巴士與鐵路保持便利時，私家車行程就會減少。充電站亦可為電動小巴或渡輪供電。整合規劃能倍增氣候效益。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Environment & Sustainability">
+        <span class="badge">Environment & Sustainability</span>
+        <h3>Encouraging Recycling & Reducing Waste</h3>
+        <p class="summary">Convenience, incentives, and education work together.</p>
+        <div class="memory-tags"><span>Bins + Benefits</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Convenient bins drive participation. Clearly labelled stations in every estate and mall remove excuses. Color coding and icons help children sort correctly. Clean, well-lit areas prevent odours that deter users.</span><span class="zh">便利的回收箱能提高參與率。每個屋苑與商場設置清楚標示的站點就沒有藉口。顏色與圖示可協助兒童正確分類。乾淨明亮的地點能避免氣味嚇退使用者。</span></li>
+          <li><span class="en">Incentives reward consistent recyclers. Deposit-refund schemes pay citizens when bottles or cans return. Supermarkets can offer loyalty points for refilling containers. Tangible benefits make habits stick.</span><span class="zh">獎勵措施能回饋持續回收者。按金退還計畫會在歸還樽罐時付款。超市可為補充容器提供積分。實際好處能讓習慣固定。</span></li>
+          <li><span class="en">Education clarifies what belongs where. Schools, apps, and bus ads can demonstrate common mistakes. Storytelling around landfill pressure makes lessons emotional. Understanding motivates better sorting.</span><span class="zh">教育能釐清物品何處處理。學校、應用程式與巴士廣告可示範常見錯誤。講述堆填區壓力的故事能加深情感。理解之後就會更願意分類。</span></li>
+          <li><span class="en">Regulations create accountability. Mandating commercial recycling plans pushes offices and restaurants to comply. Transparent audits discourage greenwashing. Enforcement ensures shared responsibility.</span><span class="zh">法規能建立問責。要求商業回收計畫能迫使辦公室與餐廳配合。透明審核可抑制漂綠行為。執法能確保責任由大家共同承擔。</span></li>
+          <li><span class="en">Reuse culture reduces waste upstream. Lending libraries, repair cafés, and swap events keep products in circulation. Designers can promote refill packs or modular goods. Waste prevention always beats treatment.</span><span class="zh">重用文化能在源頭減廢。借物圖書館、維修咖啡館與交換活動能讓物品持續流通。設計師可推廣補充包或模組化產品。防止廢物永遠比處理廢物更好。</span></li>
+        </ul>
+      </article>
+
+      <!-- Health & Lifestyle -->
+      <article class="card" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Healthier Lifestyles for Hong Kong Youth</h3>
+        <p class="summary">Make healthy choices easy, fun, and affordable.</p>
+        <div class="memory-tags"><span>Move • Munch • Mentor</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Extending PE time normalises movement. Diverse modules like climbing, dance, and martial arts reach different interests. Skill-focused grading reduces fear of failure. Active school days set lifelong habits.</span><span class="zh">增加體育課時能讓運動變成常態。攀石、舞蹈與武術等多元單元能迎合不同興趣。以技能重點評分可減少怕輸心理。活躍的校園生活能建立終身習慣。</span></li>
+          <li><span class="en">Community centres can fill gaps after class. Affordable hikes, dragon-boat training, or yoga sessions keep teens exploring. Subsidised programmes support low-income families. Shared activities also strengthen neighbourhood ties.</span><span class="zh">社區中心可在課後填補缺口。親民的遠足、龍舟訓練或瑜伽讓青少年持續探索。有資助的課程能支援低收入家庭。共同活動也能加強社區連繫。</span></li>
+          <li><span class="en">Limiting junk-food marketing protects impressionable audiences. Restricting ads around schools or youth channels reduces cravings. Highlighting local fruit snacks can shift trends. Policy sets a healthier default.</span><span class="zh">限制垃圾食品廣告能保護易受影響的族群。禁止在校園附近或青少年頻道播放相關廣告可降低慾望。推廣本地水果小食能轉變潮流。政策能建立更健康的基準值。</span></li>
+          <li><span class="en">Family involvement makes change stick. Parents cooking balanced meals or scheduling weekend bike rides model priorities. Younger siblings copy these rituals naturally. Home support reinforces what schools teach.</span><span class="zh">家庭參與能讓轉變持久。家長煮均衡菜式或安排週末單車活動能示範價值。年幼弟妹也會自然模仿這些儀式。家中支援能呼應學校所教。</span></li>
+          <li><span class="en">Digital platforms can gamify wellness affordably. Step challenges, sleep trackers, and nutrition apps reward consistency. Friendly competitions keep motivation high without pricey gear. Tech complements real-world habits.</span><span class="zh">數碼平台能以低成本遊戲化健康。步數挑戰、睡眠追蹤與營養應用能獎勵持續努力。友善競賽可在無需昂貴器材下保持動力。科技可輔助現實世界的習慣。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Rising Obesity: Causes & Solutions</h3>
+        <p class="summary">Tackle sedentary routines, diets, and stress.</p>
+        <div class="memory-tags"><span>Move More, Stress Less</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Sedentary routines dominate long school days. Students sit through lessons, tutorials, and screen-based entertainment. Limited playground space compounds inactivity. Daily movement goals counter this inertia.</span><span class="zh">久坐作息充斥漫長的上學日。學生在課堂、補習與螢幕娛樂中持續坐著。有限的遊樂空間讓不動更加嚴重。每日活動目標能對抗這種慣性。</span></li>
+          <li><span class="en">Cheap fast food shapes diets. Value meals pile on sugars, refined carbs, and oils. Portion sizes often exceed nutritional needs. Without guidance, teens treat these meals as default fuel.</span><span class="zh">廉價快餐影響飲食。超值餐往往充滿糖分、精製澱粉與油脂。份量經常超出營養所需。缺乏指導時，青少年會把此類餐點視為標準燃料。</span></li>
+          <li><span class="en">Stress triggers emotional eating. Exam pressure and family expectations push teens toward comfort snacks. Sugary treats temporarily soothe but lead to crashes. Teaching coping strategies reduces craving cycles.</span><span class="zh">壓力會誘發情緒進食。考試與家庭期望會讓青少年尋求安慰零食。含糖食物能暫時緩和但之後會崩潰。教授調適策略能減少欲望循環。</span></li>
+          <li><span class="en">Urban design can promote activity. Wider pavements, safe bike lanes, and rooftop sports courts invite movement. Green corridors make walking to MTR stations enjoyable. Infrastructure quietly shapes health outcomes.</span><span class="zh">城市設計可以推動活動。更寬的人行道、安全單車徑與天台球場都能吸引人們動起來。綠化走廊能讓步行至港鐵變得愉快。基礎建設默默地決定健康結果。</span></li>
+          <li><span class="en">Multi-sector programmes offer solutions. Schools, health departments, and food vendors can coordinate calorie labels and wellness challenges. Medical check-ups provide early warnings. Collaborative action keeps obesity trends reversible.</span><span class="zh">多方合作的計畫能提供方案。學校、衛生部門與餐飲業者可協調熱量標籤與健康挑戰。醫療檢查可提供早期警示。協作行動能讓肥胖趨勢可逆。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Mental Health is Physical Health</h3>
+        <p class="summary">Provide equal care for mind and body in schools.</p>
+        <div class="memory-tags"><span>Mind = Body</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Mental wellbeing equals physical fitness in importance. Focus, memory, and motivation collapse when anxiety spikes. Friendships and family harmony also hinge on emotional stability. Schools must communicate this parity.</span><span class="zh">心理健康與體能同樣重要。焦慮升高時，專注、記憶與動力都會崩潰。友誼與家庭和諧也仰賴情緒穩定。學校必須清楚傳達這種同等地位。</span></li>
+          <li><span class="en">Stress often manifests physically. Students report headaches, stomach aches, or insomnia before exams. Ignoring signals leads to chronic illnesses later. Early care prevents cascading medical costs.</span><span class="zh">壓力常以身體形式出現。學生在考前容易頭痛、胃痛或失眠。忽視這些訊號會導致日後的慢性病。及早照顧能避免醫療成本連鎖增加。</span></li>
+          <li><span class="en">More trained counsellors are essential. Confidential rooms allow honest sharing without gossip fears. Professional guidance teaches coping plans tailored to each student. Adequate staffing shortens waiting times.</span><span class="zh">需要更多受訓輔導員。保密空間能讓學生不怕流言而坦誠傾訴。專業指導能為每位學生量身訂做調適方案。足夠人手能縮短輪候時間。</span></li>
+          <li><span class="en">Mindfulness and peer support normalise care. Short breathing breaks, gratitude circles, or peer listeners fit easily into timetables. Shared language around feelings reduces stigma. Students learn to check on each other.</span><span class="zh">靜觀與朋輩支援能讓照顧常態化。短暫呼吸練習、感恩圈或朋輩聆聽者都能輕鬆排進時間表。共享情緒語言能降低標籤。學生也會學會互相留意。</span></li>
+          <li><span class="en">Partnerships with healthcare providers close gaps. School-based clinics, telehealth vouchers, and parent workshops align resources. Coordinated referrals ensure no teen falls through cracks. Holistic systems honour mind-body links.</span><span class="zh">與醫療單位合作能補上缺口。校內診所、遙距醫療券與家長工作坊能整合資源。協調轉介能確保沒有青少年被遺漏。整全系統才能尊重身心連結。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>The Effects of Fast Food Culture</h3>
+        <p class="summary">Convenience must not cost long-term health.</p>
+        <div class="memory-tags"><span>Fast ≠ Healthy</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Fast food offers speed for hectic lives. Students between tutorials can grab meals within minutes. Families juggling shifts rely on predictable menus. Convenience keeps queues moving in dense districts.</span><span class="zh">快餐為忙碌生活提供速度。學生在補習之間能幾分鐘內用餐。輪班家庭也仰賴可預期的餐單。便利性能讓密集地區的排隊前進。</span></li>
+          <li><span class="en">Menus often lack nutrients. Many combos emphasise refined carbs, processed meats, and sugary drinks. Limited vegetables mean fibre deficits. Long-term consumption starves bodies of micronutrients.</span><span class="zh">餐單往往缺乏營養。許多套餐充滿精製澱粉、加工肉與含糖飲料。蔬菜不足導致纖維缺口。長期食用會讓身體缺乏微量營養素。</span></li>
+          <li><span class="en">Health risks accumulate quickly. Excess sodium elevates blood pressure even among teens. Saturated fats raise future heart disease odds. Medical bills later dwarf the short-term savings.</span><span class="zh">健康風險會迅速累積。過量鈉質會讓青少年也出現高血壓。飽和脂肪會提高日後心臟病機率。未來的醫療支出會遠超短期省下的錢。</span></li>
+          <li><span class="en">Fast food can replace family traditions. Home cooking lessons, festival dishes, and shared tables slowly disappear. Cultural stories tied to recipes fade from memory. Identity weakens when meals become packaged.</span><span class="zh">快餐會取代家庭傳統。家常菜教學、節慶菜餚與共享餐桌會慢慢消失。與食譜相關的文化故事會從記憶中淡去。當餐點都變成包裝品時，身份感會被削弱。</span></li>
+          <li><span class="en">Balanced strategies keep convenience without harm. Pair occasional takeaways with home-cut fruit or soups. Teach teens to read labels for portion awareness. Moderation turns fast food into an occasional treat.</span><span class="zh">平衡策略能保留便利又減少傷害。把偶爾的外賣配上自家水果或湯品。教青少年閱讀標籤以掌握份量。適度享用就能讓快餐成為偶一為之的獎勵。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Health & Lifestyle">
+        <span class="badge">Health & Lifestyle</span>
+        <h3>Balancing Study and Leisure</h3>
+        <p class="summary">Protect rest to power performance.</p>
+        <div class="memory-tags"><span>Plan to Pause</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Balance prevents academic burnout. Brains need downtime to consolidate memory. Without breaks, motivation drops and mistakes rise. Rest is a productivity tool.</span><span class="zh">平衡能防止學業倦怠。大腦需要休息來鞏固記憶。缺乏休息時，動力下降而錯誤增加。休息本身就是提高效率的工具。</span></li>
+          <li><span class="en">Hobbies recharge creativity. Music, painting, or coding for fun unlocks fresh ideas for essays. Enjoyable tasks release dopamine that fuels focus later. Students return to homework with renewed curiosity.</span><span class="zh">興趣活動能重整創意。音樂、繪畫或娛樂式編碼能為文章帶來新點子。愉快任務釋放的多巴胺能支持之後的專注。學生回到功課時會重新充滿好奇。</span></li>
+          <li><span class="en">Scheduling leisure protects it. Blocking calendar slots for sports or reading signals that rest is non-negotiable. Visual planners help families respect these commitments. Planned pauses reduce guilt.</span><span class="zh">排程休閒能保護它。為運動或閱讀預留行事曆時段表示休息不可被侵占。視覺計畫能讓家人尊重這些約定。計劃好的暫停能降低罪惡感。</span></li>
+          <li><span class="en">Device curfews safeguard sleep. Powering down phones an hour before bed calms the nervous system. Quality rest improves mood and learning retention. Consistent routines set the body clock.</span><span class="zh">裝置宵禁能保護睡眠。睡前一小時關掉手機可安撫神經系統。高品質睡眠能改善心情與學習記憶。穩定的習慣能調整生理時鐘。</span></li>
+          <li><span class="en">Open communication prevents overload. Students can review schedules weekly with parents or teachers. Adjusting expectations before crises keeps trust intact. Supportive teams make balance achievable.</span><span class="zh">開放溝通能避免過載。學生可每週與家長或老師檢視行程。在危機前調整期望能維繫信任。支持性的團隊能讓平衡變得可行。</span></li>
+        </ul>
+      </article>
+
+      <!-- Hong Kong Society & Culture -->
+      <article class="card" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Preserving Hong Kong’s Culture</h3>
+        <p class="summary">Keep heritage visible, livable, and teachable.</p>
+        <div class="memory-tags"><span>Save • Share • Subsidise</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Shielding historic buildings and markets maintains daily heritage. Saving tong lau, dai pai dong, and neon signs keeps streets recognisable. Adaptive reuse can host galleries or co-working hubs. Preservation coexists with modern needs.</span><span class="zh">保護騎樓、排檔與霓虹燈能維繫日常文化。保存唐樓、大排檔與霓虹招牌能讓街道保持熟悉感。活化再用可讓其成為畫廊或共享工作空間。保育可以與現代需求並行。</span></li>
+          <li><span class="en">Teaching traditions in schools passes knowledge forward. Lessons on Cantonese opera, dim sum etiquette, and seasonal festivals build pride. Students interview elders to capture stories. Curriculum makes culture a living subject.</span><span class="zh">在學校教授傳統能把知識傳承下去。粵劇、點心禮儀與節慶的課程能建立自豪感。學生訪問長輩以保存故事。課程可讓文化成為活的科目。</span></li>
+          <li><span class="en">Heritage tours and festivals keep customs engaging. Story-rich walks through Sham Shui Po attract both locals and visitors. Pop-up craft markets let artisans demonstrate skills. Experiences turn history into memory.</span><span class="zh">文化導賞與節慶能讓傳統更有趣。富含故事的深水埗行程能吸引本地人與旅客。快閃工藝市集讓匠人示範技巧。親身體驗能將歷史轉化為回憶。</span></li>
+          <li><span class="en">Financial support sustains craftspeople. Subsidies or low-rent studios reduce pressure on paper lantern makers and embroiderers. Apprenticeships encourage youths to learn techniques. Economic security keeps crafts alive.</span><span class="zh">財政支援能維持工藝人。補貼或低租金工作室可減輕紮作與刺繡師傅的壓力。學徒計畫能鼓勵年輕人學習技藝。經濟保障才能讓工藝延續。</span></li>
+          <li><span class="en">Digital archives document intangible culture. High-resolution recordings of chants, recipes, and rituals create open libraries. Social media campaigns celebrate bilingual slang and folklore. Technology becomes an ally for preservation.</span><span class="zh">數碼檔案能記錄非物質文化。高畫質錄音錄影可保存唱誦、食譜與儀式，建立開放資料庫。社交媒體活動能慶祝雙語俚語與民間故事。科技可以成為保育盟友。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Ageing Population Challenges</h3>
+        <p class="summary">Innovate policy, labour, and care models.</p>
+        <div class="memory-tags"><span>5 Rs: Relief, Retire, Recruit, Robots, Respect</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">More seniors strain healthcare systems. Hospitals face longer queues for chronic illnesses and rehab. Demand for geriatric specialists and carers rises. Planning must expand clinics and home-care services.</span><span class="zh">長者增加會給醫療系統帶來壓力。醫院在慢性病與復康服務上排隊更長。老年科專家與護理員的需求上升。規劃必須擴大診所與家居護理。</span></li>
+          <li><span class="en">Pension schemes bear heavier loads. With fewer contributors, public finances may stretch to cover allowances. Policymakers need sustainable funding mixes. Private savings education also becomes urgent.</span><span class="zh">退休金制度承受更大負擔。供款者減少時，公共財政需努力支撐津貼。決策者需要可持續的資金組合。推廣私人儲蓄教育亦變得迫切。</span></li>
+          <li><span class="en">Labour shortages emerge as cohorts retire. Industries such as construction, care work, and retail struggle to fill shifts. Retraining mid-career workers and inviting new talent becomes vital. Productivity hinges on adaptable policies.</span><span class="zh">隨著一批又一批人退休，勞動短缺會浮現。建築、護理與零售等行業難以填補班次。重新培訓中年員工與吸納新人才變得重要。生產力取決於靈活政策。</span></li>
+          <li><span class="en">Policy innovation can ease pressure. Gradually raising retirement ages, offering tax breaks for elder-friendly companies, and expanding automation grants all help. Integrated planning aligns housing, transport, and health.</span><span class="zh">創新政策能減輕壓力。逐步延後退休年齡、為友善長者企業提供稅務優惠及擴大自動化資助皆有幫助。整合的規劃能協調住屋、交通與醫療。</span></li>
+          <li><span class="en">Active ageing programmes keep seniors engaged. Community centres hosting arts, coding, or fitness classes promote dignity. Intergenerational mentoring connects youths with seasoned professionals. Purposeful ageing reduces loneliness.</span><span class="zh">活躍樂齡計畫能讓長者持續參與。社區中心舉辦藝術、編程或體適能課程可提升尊嚴。跨代導師計畫連結青年與資深專才。有意義的晚年能減少寂寞。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Is Hong Kong Good for Youth Dreams?</h3>
+        <p class="summary">Assess opportunities versus pressures.</p>
+        <div class="memory-tags"><span>High Opportunity, High Pressure</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Hong Kong offers world-class education and industries. Finance, logistics, and biotech hubs provide internships and mentors. Exposure to global clients sharpens professionalism early. Ambitious youth gain valuable runway.</span><span class="zh">香港擁有世界級教育與產業。金融、物流與生物科技樞紐提供實習機會與導師。接觸全球客戶能及早磨練專業。有抱負的年輕人能得到寶貴起跑線。</span></li>
+          <li><span class="en">Start-ups and creative scenes open alternative paths. Co-working spaces, maker labs, and film grants nurture non-traditional careers. Youth can test ideas quickly within the city’s dense networks. Innovation energy stays high.</span><span class="zh">初創與創意圈提供非傳統道路。共享工作空間、創客實驗室與電影資助能培育另類職涯。年輕人能在緊密人脈中迅速測試點子。創新動能保持旺盛。</span></li>
+          <li><span class="en">Living costs remain steep. Rent, transport, and even study supplies consume salaries fast. Financial pressure delays independence or risk-taking. Dreams can fade when survival becomes the priority.</span><span class="zh">生活成本依然高昂。租金、交通甚至學習用品都迅速吞噬薪金。財政壓力會延後獨立或冒險。當生存成為首要目標時，夢想容易被沖淡。</span></li>
+          <li><span class="en">Competition culture adds psychological strain. Students face intense benchmarking from primary school onward. Fear of falling behind can cause anxiety or burnout. Support systems must focus on wellbeing as well as achievement.</span><span class="zh">競爭文化增添心理壓力。學生從小學起就面臨嚴苛排名。一旦害怕落後，容易產生焦慮或倦怠。支援系統應同時關注成就與身心健康。</span></li>
+          <li><span class="en">Strong networks help youths thrive despite hurdles. Alumni groups, mentorship programmes, and professional associations open doors. Sharing resources within communities reduces inequality. Collective resilience keeps dreams alive.</span><span class="zh">強大的網絡能讓青年在阻礙中仍可茁壯。校友會、導師計畫與專業協會都能開啟大門。社群內部的資源共享能降低不平等。集體韌性能讓夢想持續。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>The Importance of Being Bilingual</h3>
+        <p class="summary">Master English and Chinese for global-local agility.</p>
+        <div class="memory-tags"><span>Two Tongues, Twice the Doors</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">English proficiency unlocks global study and work. International firms, research labs, and NGOs in Hong Kong expect fluent communication. Graduates can transfer abroad without language barriers. Opportunities widen dramatically.</span><span class="zh">英語能力能開啟全球升學與工作。香港的國際企業、研究室與非政府組織都需要流利溝通。畢業生可無語言障礙地轉往海外。機會因此大幅擴張。</span></li>
+          <li><span class="en">Chinese fluency secures Mainland connections. Business trips, Greater Bay projects, and cultural exchanges rely on Cantonese and Putonghua. Language mastery signals respect for partners. Deals close faster when trust is built.</span><span class="zh">中文流利能連結內地。商務出差、大灣區項目與文化交流都需要粵語及普通話。語言掌握代表對合作夥伴的尊重。有信任時，交易可更快完成。</span></li>
+          <li><span class="en">Bilingualism enhances cognitive flexibility. Switching codes trains brains to juggle multiple perspectives. Problem-solving and multitasking skills improve. Students become more adaptable in diverse teams.</span><span class="zh">雙語能力能提升認知彈性。轉換語言可訓練大腦同時掌握多重觀點。解難與多工技能都會提高。學生在多元團隊中更能適應。</span></li>
+          <li><span class="en">Language invites deeper cultural understanding. Reading both English and Chinese media reveals nuanced debates. Individuals can mediate between communities during misunderstandings. Cross-cultural bridges strengthen social harmony.</span><span class="zh">語言能帶來更深的文化理解。同時閱讀中英文媒體能看見更細緻的辯論。發生誤會時，雙語者可在社群間調和。跨文化橋樑能強化社會和諧。</span></li>
+          <li><span class="en">Hong Kong uniquely reinforces both languages daily. Schools teach bilingual curricula, while streets mix signs and slang. Practice happens in markets, offices, and entertainment. The environment keeps skills sharp.</span><span class="zh">香港的日常生活能同時強化兩種語言。學校採雙語課程，街頭標誌與俚語也混雜使用。市場、辦公室與娛樂場所無時無刻都在練習。這個環境能維持語言敏銳度。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Improving Tourism in Hong Kong</h3>
+        <p class="summary">Diversify experiences and raise service standards.</p>
+        <div class="memory-tags"><span>Nature • Culture • Service</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Diversifying attractions draws repeat visitors. Promoting hiking trails, heritage villages, and art hubs shows Hong Kong beyond malls. Curated itineraries help travellers mix nature with skyline views. Variety extends stays.</span><span class="zh">多元化景點能吸引回頭客。推廣遠足徑、歷史村落與藝術據點可呈現購物以外的香港。精心策劃的行程可讓旅客兼顧自然與天際線。豐富選擇能延長逗留。</span></li>
+          <li><span class="en">Highlighting local food and festivals deepens authenticity. Night markets, cha chaan teng tastings, and film weeks showcase storytelling heritage. Visitors spend more when experiences feel unique. Communities also benefit economically.</span><span class="zh">凸顯本地美食與節慶能增添真實感。夜市、茶餐廳品嚐與電影週展現故事傳統。體驗越獨特，旅客支出越多。社區亦能分享到經濟利益。</span></li>
+          <li><span class="en">Service quality must rise with expectations. Clean streets, bilingual signage, and hospitality training create welcoming memories. Transparent pricing prevents disputes. Positive word-of-mouth multiplies marketing budgets.</span><span class="zh">服務品質需與期望同步提升。乾淨街道、雙語指示與待客培訓能創造美好回憶。透明定價可避免爭執。良好口碑能放大全部行銷預算。</span></li>
+          <li><span class="en">Sustainable practices protect attractions. Visitor caps on fragile islands, refill stations, and electric tour buses reduce impact. Certification schemes reward green operators. Responsible tourism preserves resources for future generations.</span><span class="zh">永續做法能保護景點。為脆弱離島設人數上限、加設補水站與採用電動旅遊巴都能降低影響。認證制度可獎勵綠色營運者。負責任的旅遊能把資源留給下一代。</span></li>
+          <li><span class="en">Digital marketing reaches niche audiences. AR trails, interactive maps, and multilingual influencers highlight lesser-known spots. Data analytics track traveller interests in real time. Campaigns stay agile and targeted.</span><span class="zh">數碼行銷能吸引特定客群。擴增實境路線、互動地圖與多語 KOL 可推介較少人認識的景點。數據分析可即時掌握旅客興趣。宣傳活動因此更靈活且精準。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Hong Kong Society & Culture">
+        <span class="badge">HK Society & Culture</span>
+        <h3>Supporting Ethnic Minority Teenagers</h3>
+        <p class="summary">Boost belonging, language equity, and representation.</p>
+        <div class="memory-tags"><span>See • Support • Speak</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Many ethnic minority teens rarely see themselves represented. School textbooks, media, and civic ceremonies often highlight only Chinese heroes. When role models feel distant, self-worth can decline. Inclusion requires visibility.</span><span class="zh">許多少數族裔青少年很難看到自身代表。課本、媒體與公民儀式往往只強調華人英雄。當榜樣遙不可及時，自我價值會下降。要達致共融就必須提升能見度。</span></li>
+          <li><span class="en">Daily microaggressions erode belonging. Mispronounced names, assumptions about ability, or uniform rules ignoring cultural needs send exclusion signals. Teens internalise the message that they are perpetual outsiders. Consistent respect is essential.</span><span class="zh">日常的微歧視會削弱歸屬感。念錯名字、對能力的假設或忽視文化需求的校服規定都在傳遞排斥訊號。青少年會內化自己永遠是外人。持續的尊重極為重要。</span></li>
+          <li><span class="en">Chinese learning barriers remain high. Many schools lack tailored curricula or bilingual aides. Without immersive community use, vocabulary retention drops. Exams designed for native speakers feel discouraging.</span><span class="zh">中文學習障礙仍然很高。許多學校缺乏專為他們設計的課程或雙語助教。缺少社區沉浸時，詞彙難以留下。以母語者為設計基準的考試令人洩氣。</span></li>
+          <li><span class="en">Targeted support can bridge gaps. Extra language labs, mentorship pairing, and culturally responsive teaching recognise varied backgrounds. Community centres offering homework help in multiple languages build trust. Tailored resources keep students engaged.</span><span class="zh">有針對性的支援能填補差距。額外語言室、師友配對及文化回應式教學能承認多元背景。多語的社區中心補習能建立信任。度身訂造的資源能讓學生留在系統內。</span></li>
+          <li><span class="en">Celebrating multicultural contributions strengthens cohesion. School fairs, storytelling nights, and city campaigns can showcase Nepali, Pakistani, Filipino, or African heritage. When peers appreciate each other’s cultures, collaboration grows. Shared pride replaces isolation.</span><span class="zh">慶祝多元文化貢獻能強化凝聚力。學校嘉年華、說故事之夜與城市活動都可展示尼泊爾、巴基斯坦、菲律賓或非洲的傳統。當同儕欣賞彼此文化時，合作會增加。共享的自豪感能取代孤立。</span></li>
+        </ul>
+      </article>
+
+      <!-- Work & Career -->
+      <article class="card" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Skills for the Future Workplace</h3>
+        <p class="summary">Blend thinking, tech, and people skills.</p>
+        <div class="memory-tags"><span>4Cs + EI</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Critical thinking drives adaptation. Employees who question assumptions can pivot when markets change. Analysing data and bias keeps projects ethical. Curiosity becomes a competitive edge.</span><span class="zh">批判思維推動適應。能質疑假設的員工在市場轉變時能迅速轉向。分析數據與偏誤可保持專案合乎道德。好奇心就是競爭優勢。</span></li>
+          <li><span class="en">Communication and teamwork enable cross-disciplinary work. Complex problems require engineers, designers, and marketers to speak plainly with each other. Listening skills prevent costly misunderstandings. Collaborative confidence shortens project timelines.</span><span class="zh">溝通與團隊合作可促成跨領域工作。複雜問題需要工程師、設計師與市場人員彼此清晰交流。聆聽技能可避免昂貴的誤會。協作信心能縮短專案時間。</span></li>
+          <li><span class="en">Digital literacy keeps workers current. Understanding AI prompts, data dashboards, and cybersecurity basics is now essential. Employees who learn new tools quickly stay valuable. Tech fluency also protects company assets.</span><span class="zh">數碼素養能讓員工保持現代化。掌握 AI 提示語、資料儀表板與網安基礎已成必需。能快速學會新工具的人價值更高。科技流暢度亦能保護企業資產。</span></li>
+          <li><span class="en">Emotional intelligence sustains healthy workplaces. Recognising stress signals helps leaders support teammates. Empathy defuses conflict before it escalates. Psychological safety boosts innovation.</span><span class="zh">情緒智商能維持健康職場。察覺壓力訊號可以讓領袖支援團隊。同理心能在衝突升級前化解。心理安全感能提升創新。</span></li>
+          <li><span class="en">Lifelong learning keeps careers resilient. Online courses, micro-credentials, and mentorship rotations refresh skills. Setting quarterly learning goals maintains momentum. Adaptable professionals weather industry shifts.</span><span class="zh">終身學習能讓職涯保持韌性。線上課程、微證書與導師輪調可更新技能。設定每季學習目標能保持動力。具適應力的專業人士能承受產業變化。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Employee or Entrepreneur?</h3>
+        <p class="summary">Choose stability or autonomy based on risk appetite.</p>
+        <div class="memory-tags"><span>Steady vs Stretch</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Employees enjoy stability. Regular paycheques, medical benefits, and structured mentorship reduce financial fear. Predictable routines help families plan. Stability suits people prioritising security.</span><span class="zh">受僱者擁有穩定性。固定薪金、醫療福利與結構化導師制度能減輕財務恐懼。可預期的節奏方便家庭規劃。追求安全感的人最適合這種選擇。</span></li>
+          <li><span class="en">Entrepreneurs chase autonomy and upside. They shape company culture, product direction, and schedules. High risk arrives with potential high returns. Self-motivation becomes essential.</span><span class="zh">創業者追求自主與高回報。他們可決定企業文化、產品方向與時間表。高風險同時帶來高潛在收益。自我驅動因此成為關鍵。</span></li>
+          <li><span class="en">Running a business accelerates skill growth. Founders manage finance, marketing, hiring, and customer care simultaneously. Mistakes become rapid feedback loops. Resilience muscles strengthen daily.</span><span class="zh">經營企業能加速技能成長。創辦人需同時處理財務、行銷、招聘與客戶服務。錯誤會變成快速回饋。韌性肌肉天天被鍛鍊。</span></li>
+          <li><span class="en">Many professionals blend both paths. They start as employees to collect expertise and networks. Later, they launch side hustles or start-ups informed by industry insights. Hybrid careers spread risk.</span><span class="zh">許多專業人士會混合兩條路。他們先受僱以累積專業與人脈。之後再以行業見解創立副業或初創。混合式職涯能分散風險。</span></li>
+          <li><span class="en">Decision-making hinges on personal values. Risk tolerance, family obligations, access to capital, and desired lifestyle all matter. Reflecting on these factors prevents impulsive choices. Clarity leads to fulfilling careers.</span><span class="zh">抉擇取決於個人價值。風險承受度、家庭責任、資本取得與理想生活方式都很重要。反思這些因素可避免衝動決定。清晰自知能帶來滿足的職涯。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Should Students Have Part-Time Jobs?</h3>
+        <p class="summary">Work experience must coexist with academics.</p>
+        <div class="memory-tags"><span>Earn & Learn</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Part-time work teaches responsibility. Showing up on time, following instructions, and serving customers mirror adult expectations. Teens learn consequences when schedules slip. Accountability becomes real.</span><span class="zh">兼職能教導責任感。準時上班、遵從指示與服務顧客都反映成人世界的要求。行程一旦延誤，青少年會立即看到後果。責任因此變得具體。</span></li>
+          <li><span class="en">Earning pocket money builds independence. Students can fund transport, hobbies, or savings goals. Financial literacy grows when they budget their own income. Pride comes from contributing to household needs.</span><span class="zh">賺取零用錢能建立自主。學生可自行支付交通、興趣或儲蓄目標。當他們自我編列預算時，理財能力會提升。能為家庭開支出力的自豪感也會出現。</span></li>
+          <li><span class="en">Real workplaces offer soft skills. Navigating supervisors, irate customers, and team shifts develops communication agility. Exposure to different industries informs career choices. Experience makes resumes stand out.</span><span class="zh">真實職場能提供軟技能。與上司、情緒化顧客及團隊輪班互動能培養溝通敏捷度。接觸不同產業能為職涯選擇提供資訊。經驗能讓履歷更突出。</span></li>
+          <li><span class="en">Excessive hours hurt academics. Late-night shifts cut study time and sleep, leading to falling grades. Schools and families should set weekly caps. Balance must remain the priority.</span><span class="zh">過長工時會傷害學業。深夜班會削減讀書與睡眠，導致成績下滑。學校與家庭應設定每週工時上限。平衡必須保持第一位。</span></li>
+          <li><span class="en">Flexible roles create best outcomes. Seasonal work, tutoring, or project-based gigs adapt to exam cycles. Employers who understand school commitments become partners in growth. Students gain both cash and insight.</span><span class="zh">彈性職位能創造最佳結果。季節性工作、補習或專案型任務可配合考試週期。理解學校承諾的僱主能成為成長夥伴。學生能同時獲得收入與洞見。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Pros & Cons of Remote Work</h3>
+        <p class="summary">Design routines that mix autonomy and connection.</p>
+        <div class="memory-tags"><span>Hybrid Sweet Spot</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Remote work cuts commuting. Employees reclaim hours previously lost on trains or buses. Saved time can fund exercise, family care, or focused projects. Lower transport stress improves mood.</span><span class="zh">遠距工作能減少通勤。員工可收回在火車或巴士上浪費的時間。節省的時間可用於運動、照顧家人或專注專案。交通壓力降低能改善心情。</span></li>
+          <li><span class="en">Comfortable home setups may boost productivity. Individuals design lighting, music, and seating tailored to their needs. Deep-work blocks feel easier without office interruptions. Output can climb significantly.</span><span class="zh">舒適的家中環境可提升效率。員工能依需求設計燈光、音樂與座椅。沒有辦公室干擾時，更容易進入深度工作。產出有機會明顯上升。</span></li>
+          <li><span class="en">Isolation remains a major downside. Without spontaneous chats, relationships weaken. New hires struggle to learn unwritten norms. Loneliness can trigger disengagement.</span><span class="zh">孤立感仍是重大缺點。缺乏即興閒聊會讓關係變弱。新員工難以掌握潛規則。孤獨感會引發投入度下降。</span></li>
+          <li><span class="en">Boundaries blur easily. Homes become offices, so people answer messages late into the night. Burnout follows when recovery time disappears. Intentional shutdown rituals are necessary.</span><span class="zh">界線很容易模糊。家就是辦公室，因此人們常在深夜仍回覆訊息。當休息時間消失時便會出現倦怠。需要刻意的收工儀式。</span></li>
+          <li><span class="en">Hybrid systems mix autonomy with connection. Scheduled office days rebuild trust and creativity. Remote days support focus work and caregiving needs. Flexibility plus structure keeps teams engaged.</span><span class="zh">混合制度能結合自主與連結。固定的進辦日能重建信任與創意。遠距日則支援專注工作與照顧責任。兼具彈性與結構能維持團隊投入。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Work & Career">
+        <span class="badge">Work & Career</span>
+        <h3>Preparing for a Global Career</h3>
+        <p class="summary">Language, exposure, adaptability, and networking matter.</p>
+        <div class="memory-tags"><span>Languages + Lenses</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Learning additional languages unlocks markets. Knowing Japanese, Spanish, or Hindi alongside English and Chinese opens regional roles. Cultural etiquette lessons prevent faux pas. Linguistic versatility shows respect.</span><span class="zh">學習更多語言能開啟新市場。除英中外，再懂日語、西班牙語或印地語即可勝任區域職缺。文化禮儀課能避免失禮。語言多樣性代表尊重。</span></li>
+          <li><span class="en">International exposure builds confidence. Exchanges, internships, or volunteer trips teach teens to navigate unfamiliar systems. Problem-solving abroad strengthens independence. Employers value proven adaptability.</span><span class="zh">國際經驗能建立自信。交流、實習或義工旅行能教青少年面對陌生活系統。在海外解難能強化獨立性。僱主重視經證實的適應力。</span></li>
+          <li><span class="en">Digital skills cross borders easily. Data analytics, UX design, and cloud collaboration tools are used globally. Certifications showcase competence regardless of location. Tech fluency future-proofs careers.</span><span class="zh">數碼技能能跨越國界。資料分析、使用者體驗設計與雲端協作工具在全球都通用。認證能顯示無論身在何處都具備能力。科技流暢度能讓職涯更具未來性。</span></li>
+          <li><span class="en">Adaptability keeps transitions smooth. Professionals must cope with new regulations, time zones, and workplace cultures. Reflective journaling and mentorship help process change. Flexible mindsets reduce culture shock.</span><span class="zh">適應力能讓轉換更順利。專業人士必須面對新法規、時區與企業文化。反思日誌與導師能協助消化變化。靈活心態能減少文化衝擊。</span></li>
+          <li><span class="en">Global networks sustain growth. LinkedIn groups, alumni associations, and industry conferences create support circles. Keeping in touch after events leads to collaborations. Relationships often unlock the next role.</span><span class="zh">全球人脈能維持成長。LinkedIn 社群、校友會與產業會議可建立支援圈。活動後持續聯絡能帶來合作。人際關係往往能開啟下一份工作。</span></li>
+        </ul>
+      </article>
+
+      <!-- Ethics & Social Issues -->
+      <article class="card" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Citizens’ Responsibilities</h3>
+        <p class="summary">Active citizens strengthen communities.</p>
+        <div class="memory-tags"><span>Vote • Volunteer</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Responsible voting sustains democracy. Citizens should research policies, attend forums, and fact-check rumours before casting ballots. Informed choices produce accountable leaders. Civic trust grows when participation is thoughtful.</span><span class="zh">負責任的投票能維繫民主。市民應在投票前研究政策、出席論壇並查證謠言。知情的選擇能產生負責的領袖。當參與更審慎時，公民信任會提升。</span></li>
+          <li><span class="en">Obeying laws keeps communities safe. Respecting transport rules, noise ordinances, and public health guidelines protects neighbours. Even small acts like proper queueing signal mutual respect. Stability depends on everyday compliance.</span><span class="zh">守法能讓社區安全。遵守交通、噪音與公共衛生規例可保護鄰里。就連排隊等小行為也能展現互相尊重。穩定仰賴每日的遵守。</span></li>
+          <li><span class="en">Community participation builds resilience. Joining clean-ups, residents’ committees, or charity drives creates shared ownership. People spot local problems faster when they know each other. Cooperation beats waiting for external help.</span><span class="zh">參與社區能建立韌性。參加清潔活動、業主委員會或慈善行動能創造共同責任。彼此熟悉時，居民能更快發現問題。協作勝過單靠外來支援。</span></li>
+          <li><span class="en">Helping neighbours strengthens trust. Checking on elderly residents during typhoons or sharing contacts for childcare fosters support loops. Small gestures accumulate into reliable safety nets. Compassion becomes contagious.</span><span class="zh">幫助鄰居能強化信任。颱風期間探望長者或分享托兒人脈可形成支援網。小舉動累積起來就是可靠的安全網。慈悲是會傳染的。</span></li>
+          <li><span class="en">Promoting inclusivity and environmental care is also a duty. Speaking up against discrimination and sorting recyclables show everyday ethics. These habits teach younger generations what citizenship means. Values spread through action.</span><span class="zh">推動共融與環境保護同樣是責任。勇於反對歧視與做好回收都展現日常倫理。這些習慣能讓下一代明白公民身份的意義。價值觀會透過行動傳播。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Ethics of Animal Testing</h3>
+        <p class="summary">Weigh medical gains against moral costs.</p>
+        <div class="memory-tags"><span>Replace, Reduce, Refine</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Animal testing has contributed to vaccines and treatments. Controlled trials helped scientists understand diseases before risking human volunteers. Many medical devices owe their safety data to animal studies. History demonstrates tangible benefits.</span><span class="zh">動物實驗曾為疫苗與療法作出貢獻。受控試驗讓科學家在冒險使用人類志願者之前就能了解疾病。許多醫療器材的安全數據也來自動物研究。歷史證明其確有實質成果。</span></li>
+          <li><span class="en">Alternatives are rapidly improving. Computer simulations, organ-on-a-chip models, and stem-cell cultures replicate human biology more accurately each year. Investing in such tools reduces reliance on animals. Innovation aligns ethics with science.</span><span class="zh">替代方案正在快速改善。電腦模擬、晶片器官與幹細胞培養每年都更貼近人體生理。投資這些工具能降低對動物的依賴。創新可讓倫理與科學同步。</span></li>
+          <li><span class="en">Animal suffering raises moral alarms. Sentient creatures feel pain, fear, and stress during experiments. Societies must decide how much harm is tolerable for potential human gain. Ethical debates keep empathy central.</span><span class="zh">動物的痛苦會引發道德警訊。有感知的生命在實驗中會感到疼痛、恐懼與壓力。社會必須決定為潛在人類利益可容忍多少傷害。倫理爭論能讓同理心保持核心。</span></li>
+          <li><span class="en">Strict guidelines minimise harm. Requiring review boards, anaesthesia, enrichment, and clear endpoints ensures accountability. Transparency about numbers and purposes builds public trust. Oversight discourages careless use.</span><span class="zh">嚴格指引能減少傷害。審查委員會、麻醉、環境豐富與明確終點都是責任體現。公開使用數量與目的能建立公眾信任。監管可防止隨意使用。</span></li>
+          <li><span class="en">Future research should prioritise the 3Rs: replace, reduce, refine. Funding agencies can reward labs that innovate humane methods. International collaboration spreads best practices quickly. Progress depends on shared commitment.</span><span class="zh">未來研究應以替代、減量、優化為優先。資助機構可獎勵發展人道方法的實驗室。國際合作能快速分享最佳做法。進步需要共同承諾。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Closing the Rich-Poor Gap</h3>
+        <p class="summary">Combine fiscal policy with social programmes.</p>
+        <div class="memory-tags"><span>Tax • Train • Treat Fair</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Progressive taxation funds social mobility programmes. Higher earners contribute more to healthcare, schooling, and infrastructure for all. Transparent spending ensures trust. Fair systems reduce resentment.</span><span class="zh">累進稅制可資助社會流動計畫。高收入者多付稅可供全民醫療、教育與基建。透明的開支能建立信任。公平制度能減少怨氣。</span></li>
+          <li><span class="en">Education and job training open pathways. Subsidised vocational courses, coding bootcamps, and adult literacy classes equip workers for new industries. Skills increase bargaining power. Upward mobility becomes realistic.</span><span class="zh">教育與職訓能開拓道路。資助職業課程、編碼訓練營與成人識字班能讓勞工具備新產業技能。技能提升可增加議價能力。向上流動才有可能。</span></li>
+          <li><span class="en">Affordable housing policies reduce household strain. Public rental units, starter homes, and rent-to-buy schemes stabilise families. When shelter is secure, residents can invest in education. Housing justice underpins equality.</span><span class="zh">可負擔住屋政策能減輕家庭壓力。公屋、首置樓與租買並行計畫能讓家庭穩定。住屋有保障時，居民才能投資教育。住屋公義是平等的基礎。</span></li>
+          <li><span class="en">Living wages and social protection ensure dignity. Raising minimum pay, boosting transport subsidies, and protecting gig workers keep incomes steady. Safety nets prevent poverty spirals. Society benefits from reduced inequality.</span><span class="zh">維持生活工資與社會保障能守護尊嚴。提高最低薪、增加交通津貼與保障零工都能讓收入穩定。安全網能防止貧窮螺旋。減少不平等對整體社會有益。</span></li>
+          <li><span class="en">Corporate responsibility complements state action. Companies can adopt inclusive hiring, mentorships, and profit-sharing schemes. Philanthropy can target community health or education gaps. Shared prosperity strengthens long-term markets.</span><span class="zh">企業責任可補充政府措施。公司可實施共融招聘、導師制度與分紅計畫。慈善捐助可針對社區醫療或教育缺口。共享繁榮能強化長期市場。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>The Importance of Volunteer Work</h3>
+        <p class="summary">Serve others to grow yourself.</p>
+        <div class="memory-tags"><span>Give & Grow</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Volunteering builds empathy and leadership. Coordinating events or tutoring younger students requires patience and planning. Working with diverse groups broadens perspective. These qualities transfer to future jobs.</span><span class="zh">義工服務能培養同理心與領導力。籌辦活動或為低年級補習需要耐心與規劃。與多元群體合作能拓寬視野。這些特質可轉移到未來工作。</span></li>
+          <li><span class="en">Service delivers tangible help. Food drives feed families, beach clean-ups protect wildlife, and homework clubs support education. Volunteers witness immediate results. Impact motivates continued involvement.</span><span class="zh">服務能帶來實際幫助。糧食募捐能餵飽家庭，淨灘能保護野生動物，功課輔導能支援教育。義工可親眼看到成果。成效能激勵持續參與。</span></li>
+          <li><span class="en">Personal fulfilment grows from giving. Helping others boosts serotonin and meaning. Reflecting on gratitude reduces self-centred stress. Volunteers often report higher life satisfaction.</span><span class="zh">付出能帶來個人成就感。幫助他人能提升血清素與使命感。反思感恩能降低自我中心的壓力。義工往往擁有較高的生活滿意度。</span></li>
+          <li><span class="en">Networks expand through service. Volunteers meet professionals, community leaders, and like-minded peers. These relationships can lead to internships or collaborations. Social capital deepens.</span><span class="zh">服務能擴展人際網絡。義工會結識專業人士、社區領袖與志同道合者。這些關係可帶來實習或合作。社會資本因此加深。</span></li>
+          <li><span class="en">Universities and employers value sustained volunteering. Documenting hours, roles, and outcomes strengthens applications. Consistency demonstrates commitment beyond grades. Character references often arise from supervisors.</span><span class="zh">大學與僱主看重長期義工經驗。記錄時數、角色與成果能強化申請。持之以恆可展現超越成績的承諾。推薦信往往來自服務主管。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Dealing with Cyberbullying</h3>
+        <p class="summary">Prevention, reporting, and support must align.</p>
+        <div class="memory-tags"><span>Report • Educate • Support</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Fast, transparent reporting channels are crucial. Schools and platforms should offer clear buttons and follow-up timelines. Knowing action will be taken encourages victims to speak up. Accountability deters repeat offenders.</span><span class="zh">快速且透明的檢舉渠道至關重要。學校與平台應提供清楚的按鈕與跟進時程。知道會有人採取行動能鼓勵受害者發聲。問責制度能嚇阻重犯。</span></li>
+          <li><span class="en">Digital citizenship education must start early. Teaching empathy, consent, and the permanence of posts shapes behaviour. Role-playing scenarios help students practise respectful replies. Prevention beats punishment.</span><span class="zh">數碼公民教育必須及早開始。教授同理、同意概念與貼文永久性可塑造行為。角色扮演能讓學生練習有禮回應。預防勝於懲罰。</span></li>
+          <li><span class="en">Victims need emotional support. Counsellors, helplines, and peer listeners can validate feelings. Rebuilding confidence requires safe spaces and gradual exposure. Healing should be prioritised over silence.</span><span class="zh">受害者需要情緒支援。輔導員、熱線與朋輩聆聽者能肯定其感受。重建自信需要安全空間與循序漸進的再接觸。療癒應優先於沉默。</span></li>
+          <li><span class="en">Parents benefit from open dialogue. Families can set shared online rules and review privacy settings together. When adults react calmly, teens are more willing to report issues. Trust accelerates intervention.</span><span class="zh">家長需要開放對話。家庭可以共同訂立上網規則並一起檢視私隱設定。成年人冷靜回應時，青少年更願意報告問題。信任能加快介入。</span></li>
+          <li><span class="en">Platforms must enforce policies consistently. Removing abusive accounts, limiting anonymous posting, and providing mental health resources show commitment. Collaboration with law enforcement protects severe cases. Tech companies share responsibility.</span><span class="zh">平台必須一致地執行政策。移除辱罵帳戶、限制匿名發文並提供心理健康資源都能展現決心。與執法部門合作可保護嚴重案件。科技公司同樣需要承擔責任。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Ethics & Social Issues">
+        <span class="badge">Ethics & Social Issues</span>
+        <h3>Stopping Trafficking & Scam Victimisation</h3>
+        <p class="summary">Spot false ads, rescue victims, and prevent new cases.</p>
+        <div class="memory-tags"><span>Spot • Support • Safeguard</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Trafficking ads exploit economic desperation. Promises of high pay, free housing, and visa sponsorships sound life-changing to youths facing debt. Scammers mimic legitimate agencies with polished graphics. Desperation lowers scepticism.</span><span class="zh">人口販運廣告會利用經濟絕望。對負債青少年而言，高薪、包住宿與簽證贊助聽起來能改變人生。騙徒會用精美設計模仿合法中介。絕望會降低懷疑。</span></li>
+          <li><span class="en">Recruiters also weaponise social media trust. They pose as friends, mentors, or romantic interests over months. Once emotional bonds form, victims ignore warning signs. Manipulation thrives in private chats.</span><span class="zh">招募者也會利用社交媒體上的信任。他們假扮朋友、導師或戀愛對象長達數月。一旦建立情感連結，受害者就會忽視警訊。操控往往在私訊中滋長。</span></li>
+          <li><span class="en">Families must document every clue if someone vanishes. Screenshots, bank records, and travel details aid authorities. Reporting to both local police and consulates widens search reach. Quick action raises rescue odds.</span><span class="zh">家人若有人失蹤，必須紀錄所有線索。截圖、銀行紀錄與行程資料都能協助當局。同時向本地警察與領事館報案可擴大搜索範圍。迅速行動能提高營救機會。</span></li>
+          <li><span class="en">Victims need safe channels to signal distress. Secret code words, check-in schedules, and trusted helplines provide lifelines. Community organisations can liaise with regional NGOs for extraction. Prepared plans save time.</span><span class="zh">受害者需要安全的求助管道。暗號、定期報平安與可信熱線都可成為生命線。社區組織可與區域非政府組織合作安排撤離。預先的計畫能節省時間。</span></li>
+          <li><span class="en">Public education campaigns reduce susceptibility. Schools can teach scam spotting, contract reading, and visa verification. Government hotlines should verify jobs before people travel. Normalising scepticism keeps communities safer.</span><span class="zh">公共教育活動能降低受害風險。學校可教授識別騙局、閱讀合約與查證簽證。政府熱線應在出發前核實職位。把懷疑視為常態能讓社區更安全。</span></li>
+        </ul>
+      </article>
+
+      <!-- Leisure & Entertainment -->
+      <article class="card" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>K-pop & Global Entertainment Influence</h3>
+        <p class="summary">Celebrate global trends without losing local voice.</p>
+        <div class="memory-tags"><span>World + Local</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Global pop expands creative horizons. Teens learn choreography, fashion styling, and production techniques from idol performances. Exposure pushes local artists to experiment. Innovation cross-pollinates cultures.</span><span class="zh">全球流行文化能拓展創作視野。青少年從偶像表演中學跳舞、造型與製作技巧。這種接觸會促使本地藝術家嘗試新風格。創新會跨文化互相授粉。</span></li>
+          <li><span class="en">Language learning becomes fun. Fans pick up Korean lyrics, slang, and pronunciation while singing along. Curiosity often leads to formal classes. Multilingual skills emerge organically.</span><span class="zh">語言學習變得有趣。粉絲跟唱時會學到韓語歌詞、俚語與發音。好奇心常會引導他們進修正規課程。多語能力會自然萌芽。</span></li>
+          <li><span class="en">Online fandoms create global friendships. Streaming parties, fan art exchanges, and charity projects connect youths from different continents. Collaborating online builds intercultural empathy. Social networks feel borderless.</span><span class="zh">線上粉絲圈能建立全球友誼。串流派對、同人作品交流與慈善項目能連結各洲青少年。線上合作能培養跨文化同理心。社交網絡變得無國界。</span></li>
+          <li><span class="en">Overexposure can eclipse local voices. Media attention may shift away from Cantopop or Hokkien opera. Young artists might imitate foreign trends instead of telling Hong Kong stories. Cultural diversity requires intentional support.</span><span class="zh">過度曝露可能掩蓋本地聲音。媒體焦點會遠離粵語流行曲或南音。年輕創作者或只模仿外來潮流而忘記香港故事。維持文化多樣性需要刻意支持。</span></li>
+          <li><span class="en">Imported beauty standards affect self-image. Idol diets, cosmetic surgeries, and appearance rules may pressure fans. Comparing bodies to edited photos harms wellbeing. Media literacy helps youths set realistic expectations.</span><span class="zh">輸入的審美標準會影響自我形象。偶像的飲食、整容與外貌規範可能壓迫粉絲。把身材與修圖照片比較會傷害健康。媒體素養能幫助青年建立實際期望。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Video Games: Hobby or Addiction?</h3>
+        <p class="summary">Enjoy benefits while guarding against excess.</p>
+        <div class="memory-tags"><span>Play Smart</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Video games strengthen reflexes and strategy. Players make split-second decisions while processing complex visuals. Team modes train coordination and communication. Skills transfer to real-world problem-solving.</span><span class="zh">電子遊戲能強化反應與策略。玩家在處理複雜畫面時必須即時決策。團隊模式能訓練協調與溝通。這些技能可延伸到現實解難。</span></li>
+          <li><span class="en">Educational titles make learning engaging. History adventures, science puzzles, and language quests embed knowledge in narratives. Interactive feedback shows progress instantly. Curiosity stays high.</span><span class="zh">教育型遊戲能讓學習更有趣。歷史冒險、科學謎題與語言任務可把知識融入故事。即時回饋能顯示進度。好奇心會保持高昂。</span></li>
+          <li><span class="en">Online gaming fosters social communities. Friends coordinate raids or tournaments even when living apart. Shared goals build camaraderie. For shy teens, digital spaces can be safe practice grounds.</span><span class="zh">線上遊戲能培養社交社群。朋友即使相隔兩地也能協調任務或賽事。共同目標能建立情誼。對害羞青少年而言，數碼空間是安全的練習場。</span></li>
+          <li><span class="en">Addiction risks require vigilance. Unlimited playtime can replace sleep, exercise, and homework. Loot boxes and reward loops trigger compulsive behaviour. Families should watch for mood swings or secrecy.</span><span class="zh">上癮風險需要警覺。無限制遊玩會取代睡眠、運動與功課。戰利品箱與獎勵循環會觸發強迫行為。家庭應留意情緒波動或躲藏行為。</span></li>
+          <li><span class="en">Moderation keeps gaming healthy. Setting session limits, balancing offline hobbies, and choosing age-appropriate titles maintain control. When games complement life, they stay enjoyable. Structure prevents obsession.</span><span class="zh">適度能讓遊戲保持健康。設定遊戲時段、平衡線下興趣以及選擇適齡作品都能維持掌控。當遊戲補足生活時，它就會保持樂趣。結構能防止著魔。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Reading Books vs Watching Films</h3>
+        <p class="summary">Use both mediums for richer stories.</p>
+        <div class="memory-tags"><span>Page + Screen</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Reading expands vocabulary and imagination. Detailed descriptions force readers to visualise scenes actively. Encountering rare words strengthens language precision. Imagination muscles grow with every page.</span><span class="zh">閱讀能擴充詞彙與想像力。細緻描寫會迫使讀者主動構思場景。接觸罕見詞語能提升語言精準度。每翻一頁都在鍛鍊想像力。</span></li>
+          <li><span class="en">Books allow personal pacing. Readers can pause to annotate, research context, or reflect on themes. Slower progress deepens comprehension. Ownership of time leads to richer insights.</span><span class="zh">書籍能讓人按自己節奏前進。讀者可隨時停下做筆記、查背景或反思主題。較慢的步調能加深理解。掌控時間能帶來更豐富的洞見。</span></li>
+          <li><span class="en">Films deliver sensory immersion quickly. Cinematography, music, and acting combine to evoke emotions within minutes. Shared screenings create communal reactions. Stories become collective experiences.</span><span class="zh">電影能迅速提供感官沉浸。攝影、音樂與演技能在幾分鐘內喚起情感。共同觀影能創造集體反應。故事因此成為共享體驗。</span></li>
+          <li><span class="en">Adaptations highlight different interpretations. Comparing a novel and its film reveals what directors prioritise. Discussions about omissions or changes sharpen critical thinking. Multiple mediums deepen understanding.</span><span class="zh">改編作品能展現不同詮釋。比較小說與電影可看出導演的重點。討論刪減或改動能磨練批判思維。多媒體能加深理解。</span></li>
+          <li><span class="en">Using both formats enriches learning. Students can read first for depth, then watch to analyse visual choices. Films may motivate reluctant readers to tackle originals. Blended approaches honour diverse preferences.</span><span class="zh">同時使用兩種媒介能豐富學習。學生可先閱讀以獲得深度，再觀影分析視覺選擇。電影能激勵不愛閱讀者挑戰原著。混合方法能照顧多元喜好。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Developing Work-Life Balance</h3>
+        <p class="summary">Plan boundaries to protect joy.</p>
+        <div class="memory-tags"><span>Boundaries = Balance</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Setting boundaries protects joy. Rules like no work emails after 8 p.m. remind teams to rest. When downtime is defended, energy returns faster. Boundaries signal self-respect.</span><span class="zh">設定界線能保護快樂。晚八點後不收工作電郵等規則能提醒團隊休息。當休息被守護時，精力會更快恢復。界線象徵自我尊重。</span></li>
+          <li><span class="en">Scheduling leisure as appointments ensures follow-through. Booking fitness classes or dinner with friends in calendars makes them non-negotiable. Visual reminders reduce overbooking. Balanced weeks feel intentional.</span><span class="zh">把休閒當成約會來排程能確保實行。把健身課或朋友飯局寫入行事曆就不容更改。視覺提醒能減少排程過量。平衡的一週會更有目的。</span></li>
+          <li><span class="en">Efficient workflows prevent spillover. Batch processing emails, prioritising top three tasks, and delegating early keep workloads realistic. Leaving work on time feels achievable. Productivity rises when chaos drops.</span><span class="zh">高效率流程能防止工作外溢。分批處理電郵、鎖定前三要務與及早分工能讓工作量合理。準時下班變得可行。當混亂減少時，效率自然提升。</span></li>
+          <li><span class="en">Supportive employers make balance systemic. Flexible hours, wellness stipends, and mental health days show trust. Policies encourage employees to seek help without fear. Culture sets the tone.</span><span class="zh">支持性的僱主能讓平衡制度化。彈性工時、健康津貼與心理健康假都象徵信任。政策能鼓勵員工無懼地尋求協助。文化會定下基調。</span></li>
+          <li><span class="en">Monitoring wellbeing keeps adjustments on track. Journaling mood, sleep, and workload exposes warning signs. Sharing reflections with mentors sparks proactive changes. Awareness stops burnout early.</span><span class="zh">監察福祉能讓調整走在正軌。紀錄心情、睡眠與工作量能顯示警訊。與導師分享心得能引發主動改變。覺察能在倦怠初期就加以阻止。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Leisure & Entertainment">
+        <span class="badge">Leisure & Entertainment</span>
+        <h3>Is Travel Necessary for Education?</h3>
+        <p class="summary">Experience cultures firsthand whenever possible.</p>
+        <div class="memory-tags"><span>Go, Grow, Know</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Travel immerses students in living history. Standing inside museums, temples, or wetlands engages all senses. Complex issues become tangible when experienced firsthand. Lessons stick longer than textbook paragraphs.</span><span class="zh">旅行能讓學生沉浸於活的歷史。親身走進博物館、廟宇或濕地會調動所有感官。親眼所見能讓複雜議題變得具體。這些課比課本段落更牢記。</span></li>
+          <li><span class="en">New environments build independence. Navigating transit, budgeting meals, and solving small crises train resilience. Students realise they can adapt without parents. Confidence expands with every challenge.</span><span class="zh">陌生環境能培養獨立。熟悉交通、規劃餐費與解決小危機都能鍛鍊韌性。學生會發現即使沒有父母也能適應。每次挑戰都會擴張自信。</span></li>
+          <li><span class="en">Cross-cultural contact fosters empathy. Meeting peers from different backgrounds dismantles stereotypes. Shared projects encourage listening and collaboration. Understanding becomes personal rather than abstract.</span><span class="zh">跨文化接觸能培養同理心。遇見不同背景的同儕能瓦解刻板印象。共享專題能鼓勵傾聽與合作。理解因此不再抽象。</span></li>
+          <li><span class="en">Cost remains a barrier, so alternatives matter. Virtual exchanges, local heritage tours, and hosting international students can mimic some benefits. Subsidies and scholarships widen access. Equity should guide planning.</span><span class="zh">成本仍是障礙，因此替代方案很重要。虛擬交流、本地文化導賞與接待國際學生都能提供部分益處。補貼與獎學金能擴大參與。公平必須成為規劃指引。</span></li>
+          <li><span class="en">Thoughtful planning maximises learning. Pre-trip research, reflection journals, and post-trip presentations lock in insights. Educators should tie journeys to curriculum goals. Structured experiences beat aimless sightseeing.</span><span class="zh">仔細規劃能放大學習效果。行前研究、旅途日誌與行後報告能把洞見固定下來。教育者應把旅程與課程目標連結。有結構的體驗勝過漫無目的的觀光。</span></li>
+        </ul>
+      </article>
+
+      <!-- Global Issues -->
+      <article class="card" data-category="Global Issues">
+        <span class="badge">Global Issues</span>
+        <h3>Global Cooperation on Big Problems</h3>
+        <p class="summary">Shared crises require shared commitments.</p>
+        <div class="memory-tags"><span>Treaties + Teamwork</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">International treaties align targets. Agreements like the Paris Accord set measurable goals for emissions. When countries report progress transparently, trust grows. Shared timelines keep momentum.</span><span class="zh">國際條約能對齊目標。《巴黎協定》等協議為排放設定可量度的目標。當各國透明報告進度時，信任會提升。共同時程能保持推動力。</span></li>
+          <li><span class="en">Joint research accelerates breakthroughs. Scientists sharing labs, data, and computing power avoid duplication. Collaborative vaccine development showed how fast progress can be. Cooperation saves lives.</span><span class="zh">聯合研究能加速突破。科學家共享實驗室、數據與運算能力即可避免重複。疫苗協作已證明進展可以如此迅速。合作能挽救生命。</span></li>
+          <li><span class="en">Resource pooling responds to crises. Countries can send medical teams, relief goods, or satellite imagery where needed. Coordinated logistics prevent wasted supplies. Solidarity reduces suffering.</span><span class="zh">資源整合能應對危機。各國可派醫療隊、救援物資或衛星影像到需要地區。協調物流可避免資源浪費。團結能減少苦難。</span></li>
+          <li><span class="en">Funding support for developing nations is vital. Climate finance and technology transfers help vulnerable states adapt. Without assistance, inequality widens. Fair contributions reflect shared responsibility.</span><span class="zh">支援發展中國家的資金至關重要。氣候融資與技術轉移能協助脆弱國家適應。若沒有援助，不平等只會擴大。公平的出資能體現共同責任。</span></li>
+          <li><span class="en">Citizen diplomacy strengthens formal efforts. Cultural exchanges, youth summits, and sister-city programmes build grassroots empathy. When citizens value cooperation, leaders face pressure to collaborate. People power sustains agreements.</span><span class="zh">民間外交能強化正式努力。文化交流、青年峰會與姊妹城市計畫能建立草根同理心。當市民重視合作時，領袖就會被迫協作。人民力量能維持協議。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Global Issues">
+        <span class="badge">Global Issues</span>
+        <h3>Globalization’s Impact on Local Cultures</h3>
+        <p class="summary">Blend enrichment with preservation.</p>
+        <div class="memory-tags"><span>Open yet Original</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">Globalisation introduces new foods, music, and ideas. Cities gain fusion cuisines, world cinema, and international art festivals. Exposure broadens citizens’ tastes. Creativity flourishes through remixing.</span><span class="zh">全球化帶來新的飲食、音樂與思想。城市會有融合菜、世界電影與國際藝術節。接觸能拓寬市民品味。創意在混搭中蓬勃。</span></li>
+          <li><span class="en">Cultural exchange fosters mutual understanding. Learning foreign customs reduces fear and prejudice. Students appreciate differences when they share classrooms. Peaceful relations rely on such empathy.</span><span class="zh">文化交流能促進彼此理解。學習外地習俗能減少恐懼與偏見。學生在共用課室時能欣賞差異。和平關係有賴這種同理心。</span></li>
+          <li><span class="en">Dominant cultures can overshadow local languages and crafts. Global entertainment sometimes crowds out Cantonese theatre or Hakka weaving. Younger generations may stop learning ancestral skills. Diversity erodes quietly.</span><span class="zh">主流文化可能掩蓋本地語言與工藝。全球娛樂有時會擠壓粵劇或客家織藝。年輕一代可能停止學習祖傳技藝。多樣性會在無聲中流失。</span></li>
+          <li><span class="en">Economies can become dependent on global brands. Small businesses struggle when chains set pricing power. Cultural homogenisation follows identical storefronts. Local entrepreneurs need supportive policies.</span><span class="zh">經濟可能因此依賴全球品牌。當連鎖店擁有定價權時，小商戶會陷入困境。同樣的店面會造成文化同質化。本地企業需要政策扶持。</span></li>
+          <li><span class="en">Preservation must accompany openness. Funding language classes, heritage festivals, and local media keeps traditions alive. Policies can require cultural content quotas. Balance lets societies stay unique while engaging globally.</span><span class="zh">在保持開放的同時必須進行保育。資助語言課程、傳統節慶與本地媒體能維持文化生命力。政策可規定文化內容配額。平衡能讓社會在融入全球的同時保持獨特。</span></li>
+        </ul>
+      </article>
+
+      <article class="card" data-category="Global Issues">
+        <span class="badge">Global Issues</span>
+        <h3>Role of the United Nations in Peace</h3>
+        <p class="summary">Reform and resources keep peacekeeping relevant.</p>
+        <div class="memory-tags"><span>Mediate • Protect • Reform</span></div>
+        <button class="card-toggle">Show Points</button>
+        <ul>
+          <li><span class="en">The UN provides diplomatic platforms. Security Council meetings and back-channel negotiations defuse tensions before violence erupts. Neutral venues encourage dialogue between rivals. Mediation saves lives.</span><span class="zh">聯合國提供外交平台。安理會會議與私下談判能在暴力爆發前消除緊張。中立場地能鼓勵對手對話。調解能挽救生命。</span></li>
+          <li><span class="en">Peacekeepers protect civilians in fragile regions. Blue helmets monitor ceasefires, escort aid convoys, and train local police. Their presence can deter armed groups. Communities gain breathing space.</span><span class="zh">維和部隊能保護脆弱地區的平民。藍盔會監察停火、護送援助並訓練地方警力。他們的存在能嚇阻武裝團體。社群因此能爭取緩和空間。</span></li>
+          <li><span class="en">The UN promotes human rights standards. Agencies document abuses, support independent media, and advise on legal reforms. International attention pressures violators. Rights frameworks guide national laws.</span><span class="zh">聯合國推廣人權標準。各機構會記錄侵害事件、支援獨立媒體並為法律改革提供建議。國際關注能向違規者施壓。人權框架可指引國內法。</span></li>
+          <li><span class="en">Humanitarian coordination speeds relief. During disasters, the UN mobilises food, shelter, and medical teams from many countries. Shared logistics avoid duplication. Unified efforts reach survivors faster.</span><span class="zh">人道協調能加速救援。災難時，聯合國會動員多國的糧食、庇護與醫療隊伍。共享物流能避免重複。統一行動能更快抵達倖存者。</span></li>
+          <li><span class="en">Reforms remain necessary. Veto powers and funding gaps sometimes stall action. Expanding regional representation and improving accountability could strengthen legitimacy. Ongoing evaluation keeps the UN relevant.</span><span class="zh">改革仍然必要。否決權與資金缺口有時會讓行動停滯。擴大地區代表性與提升問責可增強公信力。持續檢討才能讓聯合國保持相關性。</span></li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <button class="back-to-top" id="backToTop">↑</button>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+    const backToTop = document.getElementById('backToTop');
+
+    function applyFilters() {
+      const query = searchInput.value.toLowerCase();
+      const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+      cards.forEach(card => {
+        const matchesFilter = activeFilter === 'all' || card.dataset.category === activeFilter;
+        const matchesQuery = card.innerText.toLowerCase().includes(query);
+        card.style.display = matchesFilter && matchesQuery ? 'flex' : 'none';
+      });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+      });
+    });
+
+    document.querySelectorAll('.card-toggle').forEach(btn => {
+      const card = btn.closest('.card');
+      btn.textContent = 'Show Points';
+      btn.addEventListener('click', () => {
+        const isExpanded = card.classList.toggle('expanded');
+        btn.textContent = isExpanded ? 'Hide Points' : 'Show Points';
+      });
+    });
+
+    window.addEventListener('scroll', () => {
+      backToTop.style.display = window.scrollY > 400 ? 'block' : 'none';
+    });
+
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Auto-generate topic sentences and expand details to ~7 sentences
+    document.addEventListener('DOMContentLoaded', () => {
+      const liItems = document.querySelectorAll('ul li');
+      liItems.forEach(li => {
+        const enSpan = li.querySelector('.en');
+        const zhSpan = li.querySelector('.zh');
+
+        // English processing
+        if (enSpan) {
+          const sentences = splitSentencesEn(enSpan.textContent.trim());
+          const expanded = expandToCount(sentences, 7);
+          const topicText = sentences.length ? ensurePunctuationEn(sentences[0]) : '';
+          const topicEl = document.createElement('span');
+          topicEl.className = 'topic en';
+          topicEl.textContent = topicText;
+
+          const detailEl = document.createElement('span');
+          detailEl.className = 'detail en';
+          detailEl.textContent = expanded.map(ensurePunctuationEn).join(' ').trim();
+
+          enSpan.replaceWith(topicEl, detailEl);
+        }
+
+        // Chinese processing
+        if (zhSpan) {
+          const sentencesZh = splitSentencesZh(zhSpan.textContent.trim());
+          const expandedZh = expandToCount(sentencesZh, 7);
+          const topicTextZh = sentencesZh.length ? ensurePunctuationZh(sentencesZh[0]) : '';
+          const topicElZh = document.createElement('span');
+          topicElZh.className = 'topic zh';
+          topicElZh.textContent = topicTextZh;
+
+          const detailElZh = document.createElement('span');
+          detailElZh.className = 'detail zh';
+          detailElZh.textContent = expandedZh.map(ensurePunctuationZh).join('').trim();
+
+          zhSpan.replaceWith(topicElZh, detailElZh);
+        }
+      });
+    });
+
+    function splitSentencesEn(text) {
+      if (!text) return [];
+      return text
+        .split(/(?<=[.?!])\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    }
+
+    function splitSentencesZh(text) {
+      if (!text) return [];
+      return text
+        .split(/(?<=[。！？!?\n])/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    }
+
+    function ensurePunctuationEn(s) {
+      if (!s) return '';
+      const trimmed = s.trim();
+      return /[.?!]$/.test(trimmed) ? trimmed : trimmed + '.';
+    }
+
+    function ensurePunctuationZh(s) {
+      if (!s) return '';
+      const trimmed = s.trim();
+      return /[。！？]$/.test(trimmed) ? trimmed : trimmed + '。';
+    }
+
+    function expandToCount(arr, count) {
+      if (!arr || arr.length === 0) return [];
+      const out = [...arr];
+      let i = 0;
+      while (out.length < count) {
+        out.push(arr[i % arr.length]);
+        i++;
+      }
+      return out;
+    }
+  </script>
+</body>
+</html>
