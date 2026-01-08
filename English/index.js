@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>English DSE Practice</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 22px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 48px;
+            text-align: center;
+            max-width: 860px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(6px);
+        }
+
+        h1 {
+            color: #1f2430;
+            margin-bottom: 10px;
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            letter-spacing: 0.2px;
+        }
+
+        .subtitle {
+            color: #4b5563;
+            margin-bottom: 36px;
+            font-size: 1.1em;
+            line-height: 1.45;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        .website-button {
+            position: relative;
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            color: #ffffff;
+            border: none;
+            padding: 22px 22px;
+            border-radius: 16px;
+            font-size: 1.25em;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.28);
+            outline: none;
+        }
+
+        .website-button::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            background: radial-gradient(900px 180px at 20% 10%, rgba(255,255,255,0.30), transparent 60%);
+            pointer-events: none;
+        }
+
+        .website-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(79, 70, 229, 0.38);
+            filter: saturate(1.05);
+        }
+
+        .website-button:active { transform: translateY(-1px); }
+
+        .website-button:focus-visible {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35), 0 18px 40px rgba(79, 70, 229, 0.38);
+        }
+
+        .button-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .button-title span.label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button-title span.arrow {
+            font-weight: 900;
+            opacity: 0.95;
+        }
+
+        .button-description {
+            margin-top: 10px;
+            font-size: 0.98em;
+            color: rgba(255,255,255,0.92);
+            line-height: 1.35;
+            font-weight: 600;
+        }
+
+        /* "Still on progress" style */
+        .disabled {
+            background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+            box-shadow: 0 10px 22px rgba(17,24,39,0.25);
+            cursor: not-allowed;
+        }
+
+        .disabled:hover {
+            transform: none;
+            box-shadow: 0 10px 22px rgba(17,24,39,0.25);
+            filter: none;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .footer {
+            margin-top: 34px;
+            color: #6b7280;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>English DSE Practice</h1>
+        <p class="subtitle">Choose a paper to begin.</p>
+
+        <div class="button-grid">
+            <!-- 1) Reading (Still on progress) -->
+            <a href="javascript:void(0)" class="website-button disabled" aria-disabled="true">
+                <div class="button-title">
+                    <span class="label">Reading</span>
+                    <span class="badge">Coming soon</span>
+                </div>
+                <div class="button-description">Still on progress.</div>
+            </a>
+
+            <!-- 2) Writing (Still on progress) -->
+            <a href="javascript:void(0)" class="website-button disabled" aria-disabled="true">
+                <div class="button-title">
+                    <span class="label">Writing</span>
+                    <span class="badge">Coming soon</span>
+                </div>
+                <div class="button-description">Still on progress.</div>
+            </a>
+
+            <!-- 3) Listening (Still on progress) -->
+            <a href="javascript:void(0)" class="website-button disabled" aria-disabled="true">
+                <div class="button-title">
+                    <span class="label">Listening</span>
+                    <span class="badge">Coming soon</span>
+                </div>
+                <div class="button-description">Still on progress.</div>
+            </a>
+
+            <!-- 4) Speaking (go to speaking.js in the same folder) -->
+            <a href="./speaking.html" class="website-button">
+                <div class="button-title">
+                    <span class="label">Speaking</span>
+                    <span class="arrow">→</span>
+                </div>
+                <div class="button-description">Start Speaking practice.</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>Reading/Writing/Listening are coming soon. Speaking is available now.</p>
+        </div>
+    </div>
+
+    <!-- If you want Speaking to run "speaking.js", use a separate speaking.html (recommended). -->
+</body>
+</html>
